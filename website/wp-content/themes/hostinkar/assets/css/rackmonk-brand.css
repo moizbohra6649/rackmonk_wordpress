@@ -1,0 +1,63 @@
+/*
+ * Rackmonk brand layer.
+ * Colours and fonts come from Elementor → Site Settings (Global Colors / Global Fonts),
+ * so changing them there updates the whole theme, including non-Elementor pages.
+ * Fallback values are used where Elementor's kit is not loaded.
+ */
+body {
+  --rm-primary: var(--e-global-color-primary, #17BD54);
+  --rm-primary-dark: var(--e-global-color-accent, #0F9A43);
+  --rm-heading: var(--e-global-color-secondary, #131415);
+  --rm-text: var(--e-global-color-text, #404248);
+  --rm-light: var(--e-global-color-rmlight, #DEF7EA);
+  --rm-soft: var(--e-global-color-rmsoft, #B9EDCC);
+  --rm-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* Theme (demo) variables → one brand palette */
+  --tg-theme-primary: var(--rm-primary);
+  --tg-theme-primary-2: var(--rm-primary);
+  --tg-theme-primary-3: var(--rm-primary);
+  --tg-theme-secondary: var(--rm-primary);
+  --tg-color-blue-default: var(--rm-primary);
+  --tg-color-green-default: var(--rm-primary-dark);
+  --tg-heading-color: var(--rm-heading);
+  --tg-body-color: var(--rm-text);
+  --tg-color-lavender-default: var(--rm-light);
+  --tg-color-alice-blue-default: var(--rm-light);
+  --tg-color-anti-flash-2: var(--rm-light);
+  --tg-color-gray-9: var(--rm-light);
+
+  /* Typography */
+  --tg-body-font-family: var(--rm-font);
+  --tg-heading-font-family: var(--rm-font);
+  --tg-body-line-height: 1.65;
+  --tg-heading-line-height: 1.2;
+
+  /* Bootstrap components follow the brand too */
+  --bs-primary: var(--rm-primary);
+  --bs-link-color: var(--rm-primary);
+  --bs-link-hover-color: var(--rm-primary-dark);
+  --bs-body-font-family: var(--rm-font);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * Responsive heading scale. Tag-level only, so it applies to plain headings
+ * (blog posts, policy pages, text editor) and never overrides designed section titles.
+ * Desktop → mobile: H1 44→32, H2 36→28, H3 28→22, H4 22→19, H5 18, H6 16.
+ */
+h1 { font-size: clamp(2rem, 1.6rem + 1.4vw, 2.75rem); }
+h2 { font-size: clamp(1.75rem, 1.5rem + 0.9vw, 2.25rem); }
+h3 { font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem); }
+h4 { font-size: clamp(1.1875rem, 1.1rem + 0.3vw, 1.375rem); }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
+
+/* Form fields and buttons use the site font instead of the browser default */
+button, input, select, optgroup, textarea { font-family: inherit; }
+
+/* Text selection + keyboard focus in brand colour */
+::selection { background: var(--rm-primary); color: #fff; }
+:focus-visible { outline: 2px solid var(--rm-primary); outline-offset: 2px; }

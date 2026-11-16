@@ -1,0 +1,42 @@
+.buttonstylediv {
+    border: 2px solid #cacaca;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.image-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.delete-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
+
+.customlabeldesign
+{
+    cursor: pointer;
+}
+
+.makeitcursor {
+    cursor: pointer !important;
+}

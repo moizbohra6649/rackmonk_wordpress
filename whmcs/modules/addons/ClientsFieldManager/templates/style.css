@@ -1,0 +1,80 @@
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    background-color: #eaeaea;
+}
+
+.grid div {
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+}
+
+.checkboxContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-column: span 2;
+    /* background-color: white; */
+    /* border: 1px solid #c7c1c1; */
+    display: block;
+    padding: 18px;
+}
+
+.form-container {
+    border: 1px solid #c7c1c1;
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #eaeaea;
+    padding: 20px;
+}
+
+.save-button-container {
+    text-align: center;
+    margin-bottom: 9px;
+}
+
+.labelname {
+    text-align: left;
+}
+
+.radio-group label {
+    cursor: pointer;
+}
+
+.radio-group {
+    text-align: right;
+}
+
+.swal-title {
+    font-size: 30px !important;
+}
+
+
+.swal2-html-container {
+    font-size: 20px !important;
+}
+
+.swal2-confirm {
+    font-size: 1.75rem !important;
+}
+
+.top-right-time {
+
+    float: right;
+    padding: 6px;
+}
+
+#fieldForm {
+    margin-top: 12px !important;
+
+}
+
+label {
+    font-size: 16px;
+}
+table td{
+    text-align: center;
+}

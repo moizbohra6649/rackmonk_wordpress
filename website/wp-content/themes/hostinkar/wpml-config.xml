@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<wpml-config>
+  <elementor-widgets>
+
+    <!-- =========================
+         XHOSTING BANNER WIDGET
+    ========================== -->
+    <widget name="xhosting-banner">
+      <fields>
+        <field type="Banner Style Select" editor_type="LINE"/>
+        <field type="Sub Title" editor_type="LINE"/>
+        <field type="Title" editor_type="AREA"/>
+        <field type="Description" editor_type="AREA"/>
+        <field type="Reguler Price" editor_type="LINE"/>
+        <field type="Discount Price" editor_type="LINE"/>
+        <field type="Button Label" editor_type="LINE"/>
+        <field type="Rate Text" editor_type="LINE"/>
+        <field type="Outof Text" editor_type="LINE"/>
+        <field type="Rating Total Text" editor_type="LINE"/>
+        <field type="Review Text" editor_type="LINE"/>
+      </fields>
+
+      <fields-in-repeater name="lists">
+        <field type="List Title" editor_type="AREA"/>
+      </fields-in-repeater>
+    </widget>
+
+
+    <!-- =========================
+         XHOSTING BLOG WIDGET
+    ========================== -->
+    <widget name="xhosting-blog">
+      <fields>
+        <field type="Style" editor_type="LINE"/>
+        <field type="Post Column Style" editor_type="LINE"/>
+        <field type="Post Order" editor_type="LINE"/>
+        <field type="Posts Per Page" editor_type="LINE"/>
+        <field type="Select Categories" editor_type="LINE"/>
+        <field type="Title Length" editor_type="LINE"/>
+        <field type="Excerpt Length" editor_type="LINE"/>
+        <field type="Read More Button" editor_type="LINE"/>
+      </fields>
+    </widget>
+
+
+    <!-- =========================
+         XHOSTING BRAND WIDGET
+    ========================== -->
+    <widget name="xhosting-brand-c">
+      <fields>
+        <field type="Brand Style Select" editor_type="LINE"/>
+        <field type="Title" editor_type="AREA"/>
+      </fields>
+
+      <fields-in-repeater name="brands">
+        <field type="Brand Image" editor_type="MEDIA"/>
+      </fields-in-repeater>
+    </widget>
+
+    <!-- =========================
+         XHOSTING Button WIDGET
+    ========================== -->
+    <widget name="xhosting-btn">
+        <fields>
+            <field type="Button Info" editor_type="LINE">btn_info</field>
+            <field type="Button Label" editor_type="LINE">btn_label</field>
+            <field type="Button Link" editor_type="LINK">btn_link</field>
+        </fields>
+    </widget>
+
+    
+    <!-- =============================
+            Xhosting Contact Info Box Widget
+    ============================= -->
+    <widget name="ex-ct-info-box">
+        <fields>
+            <field type="Title" editor_type="LINE">title</field>
+            <field type="Description" editor_type="AREA">description</field>
+        </fields>
+
+        <!-- Repeater Fields -->
+        <repeaters>
+            <repeater name="infos">
+                <fields>
+                    <field type="Item Title" editor_type="LINE">title</field>
+                    <field type="Item Link" editor_type="LINK">link</field>
+                </fields>
+            </repeater>
+        </repeaters>
+    </widget>
+
+    <!-- Xhosting Contact Form Widget -->
+    <widget name="ex-ct-form">
+        <fields>
+            <field type="Title" editor_type="LINE">title</field>
+            <field type="Shortcode" editor_type="AREA">shortcode</field>
+            <field type="Button Title" editor_type="LINE">btn_title</field>
+            <field type="Phone Title" editor_type="LINE">phn_title</field>
+            <field type="Phone Number" editor_type="LINE">phone</field>
+        </fields>
+    </widget>
+     <!-- =============================
+            Xhosting Counter Widget
+    ============================== -->
+    <widget name="ex-ct-group">
+        <fields>
+            <!-- For Style 3 (single counter) -->
+            <field type="Title" editor_type="LINE">title</field>
+            <field type="Count Number" editor_type="LINE">count</field>
+            <field type="Count Prefix" editor_type="LINE">prefix</field>
+
+            <!-- CTA section (optional if visible in this widget) -->
+            <field type="Button Title" editor_type="LINE">btn_title</field>
+            <field type="Phone Title" editor_type="LINE">phn_title</field>
+            <field type="Phone Number" editor_type="LINE">phone</field>
+        </fields>
+
+        <!-- Repeater fields -->
+        <repeaters>
+            <repeater name="counters">
+                <fields>
+                    <field type="Count Number" editor_type="LINE">count</field>
+                    <field type="Prefix" editor_type="LINE">prefix</field>
+                    <field type="Title" editor_type="LINE">title</field>
+                </fields>
+            </repeater>
+        </repeaters>
+    </widget>
+        <!-- =============================
+            Xhosting CTA Widget
+    ============================== -->
+    <widget name="xhostint-cta">
+        <fields>
+            <field type="Title" editor_type="LINE">title</field>
+            <field type="Description" editor_type="AREA">description</field>
+            <field type="Button Label" editor_type="LINE">btn_label</field>
+        </fields>
+    </widget>
+
+    <!-- =============================
+            Xhosting Data Center Widget
+    ============================== -->
+    <widget name="xhosting-data-center">
+        <fields>
+            <!-- Main Section -->
+            <field type="Title" editor_type="LINE">title</field>
+            <field type="Description" editor_type="AREA">description</field>
+
+            <!-- Tabs -->
+            <field type="Repeater" editor_type="LINE" name="tabs">
+                <sub_field type="Title" editor_type="LINE">title</sub_field>
+                <sub_field type="Title" editor_type="LINE">btn_label</sub_field>
+
+                <!-- Countries Repeater -->
+                <sub_field type="Repeater" editor_type="LINE" name="countries">
+                    <sub_field type="Title" editor_type="LINE">countrie</sub_field>
+                </sub_field>
+            </field>
+        </fields>
+    </widget>
+
+    <!-- =============================
+             Xhosting Domain Widget
+        ============================== -->
+        <widget name="xhs-domain-item">
+            <fields>
+                <field type="Title" editor_type="LINE">extension</field>
+                <field type="Title" editor_type="LINE">title</field>
+                <field type="Title" editor_type="LINE">price</field>
+                <field type="Title" editor_type="LINE">discount</field>
+                <field type="Title" editor_type="LINE">btn_label</field>
+                <field type="Title" editor_type="LINE">t_btn_label</field>
+            </fields>
+        </widget>
+
+    
+        <!-- =============================
+             Xhosting Transfer Widget
+        ============================== -->
+        <widget name="xhs-domain-transfer">
+            <fields>
+                <field type="Title" editor_type="LINE">title</field>
+                <field type="Title" editor_type="LINE">search_btn</field>
+                <field type="Title" editor_type="LINE">text</field>
+                <field type="Title" editor_type="LINE">btn_label</field>
+                <field type="Title" editor_type="LINE">extension_domain</field>
+            </fields>
+        </widget>
+
+  </elementor-widgets>
+</wpml-config>

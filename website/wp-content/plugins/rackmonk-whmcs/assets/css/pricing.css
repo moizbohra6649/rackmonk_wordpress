@@ -1,0 +1,338 @@
+/**
+ * Rackmonk Pricing Styles
+ */
+
+.rackmonk-pricing-container {
+    max-width: 1240px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: inherit;
+    color: #1a1e21;
+}
+
+/* Category Tabs */
+.rackmonk-category-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.rackmonk-cat-btn {
+    background: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-surface-container-high);
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rackmonk-cat-btn:hover {
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--tg-heading-color, #131415);
+}
+
+.rackmonk-cat-btn.active {
+    background: var(--tg-theme-primary, var(--md-sys-color-primary-strong));
+    color: #ffffff;
+    border-color: var(--tg-theme-primary, var(--md-sys-color-primary-strong));
+    box-shadow: 0 4px 14px rgba(var(--md-sys-color-primary-rgb), 0.3);
+}
+
+/* Cycle Duration Tabs */
+.rackmonk-cycle-tabs-wrap {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.rackmonk-cycle-tabs {
+    display: inline-flex;
+    background: var(--md-sys-color-surface-container-low);
+    border: 2px solid var(--md-sys-color-surface-container-high);
+    border-radius: 50px;
+    padding: 6px;
+    gap: 8px;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.rackmonk-cycle-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--md-sys-color-outline);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.rackmonk-cycle-btn .cycle-badge {
+    background: var(--md-sys-color-primary-container-low);
+    color: var(--md-sys-color-primary);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rackmonk-cycle-btn:hover {
+    color: var(--tg-heading-color, #131415);
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.rackmonk-cycle-btn.active {
+    background: var(--tg-heading-color, #131415);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+}
+
+.rackmonk-cycle-btn.active .cycle-badge {
+    background: var(--md-sys-color-primary);
+    color: #ffffff;
+}
+
+.rackmonk-cycle-hint {
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--md-sys-color-primary-tone-20);
+    font-weight: 500;
+}
+
+/* Pricing Grid */
+.rackmonk-pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    align-items: stretch;
+}
+
+/* Plan Card */
+.rackmonk-plan-card {
+    background: #ffffff;
+    border: 2px solid var(--md-sys-color-surface-container-high);
+    border-radius: 20px;
+    padding: 36px 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.rackmonk-plan-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: var(--md-sys-color-primary-fixed-dim);
+}
+
+.rackmonk-plan-card.is-popular {
+    border-color: var(--tg-theme-primary, var(--md-sys-color-primary-strong));
+    box-shadow: 0 20px 25px -5px rgba(var(--md-sys-color-primary-rgb), 0.15);
+}
+
+.rackmonk-popular-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--tg-theme-primary, var(--md-sys-color-primary-strong)), var(--e-global-color-accent, var(--md-sys-color-primary-strong)));
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(var(--md-sys-color-primary-rgb), 0.4);
+}
+
+/* Plan Header */
+.rackmonk-plan-header {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--md-sys-color-surface-container-low);
+    margin-bottom: 24px;
+}
+
+.rackmonk-plan-group {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--tg-theme-primary, var(--md-sys-color-primary-strong));
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.rackmonk-plan-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--tg-heading-color, #131415);
+    margin: 0 0 6px 0;
+}
+
+.rackmonk-plan-tagline {
+    font-size: 14px;
+    color: var(--md-sys-color-primary);
+    margin: 0;
+}
+
+/* Price Wrap */
+.rackmonk-plan-price-wrap {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.rackmonk-price-regular {
+    font-size: 14px;
+    color: var(--md-sys-color-primary-fixed-dim);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.rackmonk-price-regular del {
+    font-weight: 600;
+}
+
+.rackmonk-price-regular .discount-badge {
+    background: var(--md-sys-color-primary-container-low);
+    color: var(--md-sys-color-primary-tone-20);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.rackmonk-price-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    color: var(--tg-heading-color, #131415);
+}
+
+.rackmonk-price-main .currency {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.rackmonk-price-main .price-val {
+    font-size: 54px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.rackmonk-price-main .rackmonk-configure-price {
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -1px;
+}
+
+.rackmonk-price-main .period {
+    font-size: 16px;
+    color: var(--md-sys-color-primary);
+    font-weight: 600;
+}
+
+.rackmonk-billing-note {
+    font-size: 13px;
+    color: var(--md-sys-color-outline);
+    margin-top: 8px;
+    font-weight: 600;
+    background: var(--md-sys-color-surface-container-low);
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+/* CTA Button */
+.rackmonk-plan-cta {
+    margin-bottom: 28px;
+}
+
+.rackmonk-order-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--tg-heading-color, #131415);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.rackmonk-order-btn:hover {
+    background: var(--tg-theme-primary, var(--md-sys-color-primary-strong));
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(var(--md-sys-color-primary-rgb), 0.35);
+    transform: translateY(-2px);
+}
+
+.rackmonk-plan-card.is-popular .rackmonk-order-btn {
+    background: var(--tg-theme-primary, var(--md-sys-color-primary-strong));
+    box-shadow: 0 4px 14px rgba(var(--md-sys-color-primary-rgb), 0.3);
+}
+
+.rackmonk-plan-card.is-popular .rackmonk-order-btn:hover {
+    background: var(--e-global-color-accent, var(--md-sys-color-primary-strong));
+    box-shadow: 0 8px 20px rgba(29, 78, 216, 0.45);
+}
+
+/* Features */
+.rackmonk-plan-features {
+    flex-grow: 1;
+    border-top: 1px solid var(--md-sys-color-surface-container-low);
+    padding-top: 24px;
+}
+
+.rackmonk-plan-features .features-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--tg-heading-color, #131415);
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rackmonk-plan-features .features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rackmonk-plan-features .features-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.5;
+}
+
+.rackmonk-plan-features .features-list li svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}

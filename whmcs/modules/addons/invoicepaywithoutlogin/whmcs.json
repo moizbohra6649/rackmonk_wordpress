@@ -1,0 +1,32 @@
+{
+    "schema": "1.0",
+    "type": "whmcs-addons",
+    "name": "smartersstatffs",
+    "license": "MIT",
+    "category": "addon",
+    "description": {
+        "name": "Smarters Staffs",
+        "tagline": "WHMCS Smarters Staffs",
+        "long": "WHMCS Smarters Staffs is hide or mask data from staffs or admins.",
+        "features": [
+            "Provide both client and admin facing user interfaces",
+            "Utilize hook functionality within WHMCS"
+        ]
+    },
+    "logo": {
+        "filename": "logo.png"
+    },
+    "support": {
+        "homepage": "https:\/\/www.whmcssmarters.com\/", 
+        "learn_more": "https:\/\/www.whmwhmcssmarterscs.com\/tour", 
+        "email": "support@whmcs.com", 
+        "support_url": "https:\/\/support.whmcssmarters.com\/",
+        "docs_url": "https:\/\/developers.whmcssmarters.com\/addon-modules\/"
+    },
+    "authors": [
+        {
+            "name": "WHMCSSmarters",
+            "homepage": "https:\/\/www.whmcssmarters.com\/"
+        }
+    ]
+}

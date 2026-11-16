@@ -1,0 +1,653 @@
+/*
+ * Rackmonk — Material 3 design layer.
+ * Colours come from --md-sys-color-* tokens generated from the Theme Color
+ * (Appearance → Customize → Theme Color). Do not hard-code colours here.
+ */
+
+/* ------------------------------------------------------------------ tokens */
+:root {
+  --md-shape-xs: 4px;
+  --md-shape-sm: 8px;
+  --md-shape-md: 12px;
+  --md-shape-lg: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 999px;
+  --md-elev-1: 0 1px 2px rgba(16, 24, 18, .06), 0 1px 3px 1px rgba(16, 24, 18, .05);
+  --md-elev-2: 0 1px 2px rgba(16, 24, 18, .06), 0 4px 10px 2px rgba(16, 24, 18, .07);
+  --md-elev-3: 0 4px 8px rgba(16, 24, 18, .06), 0 12px 28px 4px rgba(16, 24, 18, .09);
+  --md-motion: cubic-bezier(.2, 0, 0, 1);
+  --md-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* Theme variables → Material roles */
+body.rm-m3 {
+  --tg-theme-primary: var(--md-sys-color-primary);
+  --tg-theme-primary-2: var(--md-sys-color-primary);
+  --tg-theme-primary-3: var(--md-sys-color-primary);
+  --tg-theme-secondary: var(--md-sys-color-primary);
+  --tg-color-blue-default: var(--md-sys-color-primary);
+  --tg-color-green-default: var(--md-sys-color-primary-strong);
+  --tg-color-dark-green: var(--md-sys-color-primary-tone-20);
+  --tg-heading-color: var(--md-sys-color-on-surface);
+  --tg-body-color: var(--md-sys-color-on-surface-variant);
+  --tg-color-gray-3: var(--md-sys-color-surface-container-low);
+  --tg-color-gray-6: var(--md-sys-color-surface-container);
+  --tg-color-gray-8: var(--md-sys-color-surface-container-low);
+  --tg-color-gray-10: var(--md-sys-color-surface-container-low);
+  --tg-color-anti-flash-default: var(--md-sys-color-surface-container);
+  --tg-color-lavender-default: var(--md-sys-color-primary-container-low);
+  --tg-color-alice-blue-default: var(--md-sys-color-primary-container-low);
+  --tg-color-anti-flash-2: var(--md-sys-color-primary-container-low);
+  --tg-color-gray-9: var(--md-sys-color-primary-container-low);
+  --tg-color-yellow-light: var(--md-sys-color-primary-container-low);
+  --tg-border-1: var(--md-sys-color-outline-variant);
+  --tg-border-2: var(--md-sys-color-outline-variant);
+  --tg-color-gray-4: var(--md-sys-color-outline);
+  --tg-color-gray-7: var(--md-sys-color-on-surface-variant);
+  --tg-color-dark: var(--md-sys-color-inverse-surface);
+  --tg-color-dark-2: var(--md-sys-color-inverse-surface-high);
+  --tg-color-dark-3: var(--md-sys-color-inverse-surface-high);
+  --tg-color-dark-4: var(--md-sys-color-inverse-surface);
+  --tg-color-dark-5: var(--md-sys-color-inverse-surface);
+  --tg-body-font-family: var(--md-font);
+  --tg-heading-font-family: var(--md-font);
+  --rm-primary: var(--md-sys-color-primary);
+  --rm-primary-dark: var(--md-sys-color-primary-strong);
+  --bs-primary: var(--md-sys-color-primary);
+  --bs-link-color: var(--md-sys-color-primary-strong);
+  --bs-link-hover-color: var(--md-sys-color-primary-strong-hover);
+  background-color: var(--md-sys-color-surface-bright);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+body.rm-m3 ::selection { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+body.rm-m3 :focus-visible { outline: 3px solid var(--md-sys-color-primary-strong); outline-offset: 2px; }
+
+/* ------------------------------------------------------------- typography */
+body.rm-m3 h1, body.rm-m3 h2, body.rm-m3 h3 { letter-spacing: -0.015em; }
+body.rm-m3 .section__title .title,
+body.rm-m3 .section__title-two .title { letter-spacing: -0.02em; text-wrap: balance; }
+body.rm-m3 .section__title p,
+body.rm-m3 .section__title-two p { color: var(--md-sys-color-on-surface-variant); text-wrap: pretty; }
+body.rm-m3 .sub-title,
+body.rm-m3 .section__title .sub-title {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--md-shape-full);
+  background: var(--md-sys-color-primary-container-low); color: var(--md-sys-color-primary-strong);
+  font-size: 13px; font-weight: 600; letter-spacing: .02em;
+}
+/* Highlighted words in headings */
+body.rm-m3 .title span:not([class]) { color: var(--md-sys-color-primary-strong); }
+/* Text links in body copy */
+body.rm-m3 .entry-content a:not([class]),
+body.rm-m3 .faq__bottom-content a,
+body.rm-m3 .elementor-text-editor a:not([class]) { color: var(--md-sys-color-primary-strong); text-underline-offset: 3px; }
+
+/* ----------------------------------------------------------------- buttons */
+/* Filled button */
+body.rm-m3 .tg-btn,
+body.rm-m3 .tg-btn-two,
+body.rm-m3 .tg-btn-three,
+body.rm-m3 .tg-btn-four,
+body.rm-m3 .footer__offer-btn .tg-btn,
+body.rm-m3 .elementor-button,
+body.rm-m3 .wp-block-button__link,
+body.rm-m3 .woocommerce .button.alt,
+body.rm-m3 input[type="submit"],
+body.rm-m3 button[type="submit"]:not(.rm-menu-toggle) {
+  min-height: 44px;
+  padding: 12px 24px;
+  border-radius: var(--md-shape-full);
+  font-family: var(--md-font);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .01em;
+  line-height: 1.2;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: none;
+  transition: background-color .2s var(--md-motion), box-shadow .2s var(--md-motion), color .2s var(--md-motion), transform .2s var(--md-motion);
+}
+body.rm-m3 .tg-btn:not(.tg-border-btn):not(.tg-border-btn-two):not(.tg-black-btn-two),
+body.rm-m3 .elementor-button,
+body.rm-m3 input[type="submit"],
+body.rm-m3 button[type="submit"]:not(.rm-menu-toggle) {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: transparent;
+}
+body.rm-m3 .tg-btn:not(.tg-border-btn):not(.tg-border-btn-two):not(.tg-black-btn-two) svg,
+body.rm-m3 .tg-btn:not(.tg-border-btn):not(.tg-border-btn-two):not(.tg-black-btn-two) i { color: inherit; }
+body.rm-m3 .tg-btn:not(.tg-border-btn):not(.tg-border-btn-two):not(.tg-black-btn-two):hover,
+body.rm-m3 .elementor-button:hover,
+body.rm-m3 input[type="submit"]:hover,
+body.rm-m3 button[type="submit"]:not(.rm-menu-toggle):hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary));
+  color: var(--md-sys-color-on-primary);
+  box-shadow: var(--md-elev-1);
+}
+body.rm-m3 .tg-btn:active { transform: scale(.98); }
+
+/* Outlined button */
+body.rm-m3 .tg-border-btn,
+body.rm-m3 .tg-border-btn-two {
+  background: transparent;
+  color: var(--md-sys-color-primary-strong);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-shape-full);
+}
+body.rm-m3 .tg-border-btn:hover,
+body.rm-m3 .tg-border-btn-two:hover {
+  background: rgba(var(--md-sys-color-primary-rgb), .08);
+  color: var(--md-sys-color-primary-strong);
+  border-color: var(--md-sys-color-primary-strong);
+}
+
+/* Tonal / dark button */
+body.rm-m3 .tg-black-btn-two {
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border-radius: var(--md-shape-full);
+}
+body.rm-m3 .tg-black-btn-two:hover { background: var(--md-sys-color-inverse-surface-high); color: var(--md-sys-color-inverse-on-surface); }
+
+/* Text button */
+body.rm-m3 .tg-link-btn { color: var(--md-sys-color-primary-strong); font-weight: 600; }
+body.rm-m3 .tg-link-btn:hover { color: var(--md-sys-color-primary-strong-hover); }
+
+/* Pricing buttons fill their card */
+body.rm-m3 .pricing__btn .tg-btn { width: 100%; }
+
+/* ---------------------------------------------------------------- chips */
+body.rm-m3 .tg-badge,
+body.rm-m3 .blog__post-tag a,
+body.rm-m3 .blog__post-tag-two a,
+body.rm-m3 .tooltip-btn {
+  border-radius: var(--md-shape-sm);
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: 600;
+}
+/* --- Tabs --------------------------------------------------------------- */
+
+/* Billing switch labels (48 / 12 months): plain labels beside the switch, not chips */
+body.rm-m3 .pricing-tab { gap: 14px; flex-wrap: wrap; }
+body.rm-m3 .pricing-tab .tab-btn {
+  border: 0;
+  background: none;
+  padding: 6px 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: color .2s var(--md-motion);
+}
+body.rm-m3 .pricing-tab .tab-btn.active { color: var(--md-sys-color-on-surface); font-weight: 600; }
+body.rm-m3 .pricing-tab .tab-btn strong { color: var(--md-sys-color-primary-strong); font-weight: 600; }
+
+/* Section tabs (Home "Fast & Reliable / All-in-One / Security"): M3 primary tabs with an underline indicator */
+body.rm-m3 .services__tab-wrap .nav-tabs { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+body.rm-m3 .services__tab-wrap .nav-link {
+  background: none;
+  border: 0;
+  border-radius: var(--md-shape-sm) var(--md-shape-sm) 0 0;
+  padding: 14px 20px 18px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: color .2s var(--md-motion), background-color .2s var(--md-motion);
+}
+body.rm-m3 .services__tab-wrap .nav-link:hover { background: rgba(var(--md-sys-color-primary-rgb), .06); color: var(--md-sys-color-on-surface); }
+body.rm-m3 .services__tab-wrap .nav-link.active { background: none; color: var(--md-sys-color-primary-strong); }
+body.rm-m3 .services__tab-wrap .nav-link::before { background: var(--md-sys-color-primary); height: 3px; border-radius: 3px 3px 0 0; }
+
+/* Region tabs (Data centers): M3 segmented buttons */
+body.rm-m3 .data__center-tab .nav-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-shape-full);
+  background: var(--md-sys-color-surface-container-lowest);
+}
+body.rm-m3 .data__center-tab .nav-link {
+  min-height: 40px;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: var(--md-shape-full);
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: background-color .2s var(--md-motion), color .2s var(--md-motion);
+}
+body.rm-m3 .data__center-tab .nav-link:hover { background: rgba(var(--md-sys-color-primary-rgb), .08); color: var(--md-sys-color-on-surface); }
+body.rm-m3 .data__center-tab .nav-link.active {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: 600;
+}
+
+/* FAQ category tabs */
+body.rm-m3 .faq__tab-wrap .nav-link {
+  padding: 10px 20px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-shape-full);
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 600;
+}
+body.rm-m3 .faq__tab-wrap .nav-link.active {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-color: transparent;
+}
+/* "Most popular" badges stay warm so they stand out */
+body.rm-m3 .pricing__plan .tg-badge,
+body.rm-m3 .pricing__box .badge { background: var(--md-sys-color-warning); color: #241A00; }
+
+/* Billing toggle (switch) */
+body.rm-m3 .pricing__tab-switcher,
+body.rm-m3 .switch { accent-color: var(--md-sys-color-primary); }
+
+/* ----------------------------------------------------------------- cards */
+/* Elevated / filled cards share one shape and spacing system */
+body.rm-m3 .pricing__box,
+body.rm-m3 .pricing__box-two,
+body.rm-m3 .pricing__box-four,
+body.rm-m3 .pricing__box-five,
+body.rm-m3 .pricing__box-six,
+body.rm-m3 .pricing__box-seven {
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-shape-xl);
+  box-shadow: none;
+  transition: box-shadow .25s var(--md-motion), transform .25s var(--md-motion), border-color .25s var(--md-motion);
+}
+body.rm-m3 .pricing__box:hover,
+body.rm-m3 .pricing__box-four:hover,
+body.rm-m3 .pricing__box-seven:hover { box-shadow: var(--md-elev-2); transform: translateY(-2px); }
+/* Featured (middle) plan uses the primary container */
+body.rm-m3 .pricing__item-wrap .row > *:nth-child(2) .pricing__box,
+body.rm-m3 .pricing__item-wrap-four .row > *:nth-child(2) .pricing__box-seven {
+  background: linear-gradient(180deg, var(--md-sys-color-primary-container-low), var(--md-sys-color-surface-container-lowest) 55%);
+  border-color: var(--md-sys-color-primary-fixed-dim);
+}
+body.rm-m3 .pricing__item-wrap .row > *:nth-child(3) .pricing__box { background: var(--md-sys-color-surface-container-lowest); }
+body.rm-m3 .pricing__box-top { background: var(--md-sys-color-surface-container-low); border-radius: var(--md-shape-lg); }
+body.rm-m3 .pricing__price .price { color: var(--md-sys-color-on-surface); letter-spacing: -0.02em; }
+body.rm-m3 .pricing__list li i,
+body.rm-m3 .pricing__list li svg { color: var(--md-sys-color-primary-strong); }
+
+body.rm-m3 .hosting__item,
+body.rm-m3 .services__item,
+body.rm-m3 .team__item,
+body.rm-m3 .domain__price-item,
+body.rm-m3 .blog__post-item,
+body.rm-m3 .blog__post-item-three,
+body.rm-m3 .contact__form-box,
+body.rm-m3 .support__list-item,
+body.rm-m3 .counter__item {
+  border-radius: var(--md-shape-xl);
+}
+body.rm-m3 .hosting__item {
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  transition: box-shadow .25s var(--md-motion), transform .25s var(--md-motion);
+}
+body.rm-m3 .hosting__item:hover { box-shadow: var(--md-elev-2); transform: translateY(-3px); }
+body.rm-m3 .hosting__item .tg-btn,
+body.rm-m3 .hosting__btn .tg-btn { background: var(--md-sys-color-surface-container-lowest); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline-variant); }
+body.rm-m3 .hosting__item .tg-btn:hover,
+body.rm-m3 .hosting__btn .tg-btn:hover { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+
+/* Testimonials */
+body.rm-m3 .testimonial__item,
+body.rm-m3 .testimonial__item-three {
+  background: var(--md-sys-color-surface-container-low);
+  border: 0;
+  border-radius: var(--md-shape-xl);
+  min-height: 0;
+}
+body.rm-m3 .testimonial__author img,
+body.rm-m3 .testimonial__author-thumb img { border-radius: 50%; }
+
+/* Feature icon tiles */
+body.rm-m3 .features__icon-three {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--md-shape-lg);
+  background: var(--md-sys-color-primary-container-low);
+  color: var(--md-sys-color-primary-strong);
+}
+body.rm-m3 .features__icon-three svg, body.rm-m3 .features__icon-three img { max-width: 26px; max-height: 26px; }
+body.rm-m3 .features__item-thirteen:hover .features__icon-three { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+
+/* Coloured promo panels (were purple / yellow / mint) → tonal surfaces */
+body.rm-m3 .support__inner-wrap,
+body.rm-m3 .support__inner-wrap-two { background: var(--md-sys-color-primary-container-low); border-radius: var(--md-shape-xl); }
+body.rm-m3 .success__item { background: var(--md-sys-color-primary-container-low); border-radius: var(--md-shape-xl); }
+body.rm-m3 .success__item-two { background: var(--md-sys-color-surface-container); border-radius: var(--md-shape-xl); }
+body.rm-m3 .success__item-three { background: var(--md-sys-color-secondary-container); border-radius: var(--md-shape-xl); }
+
+/* Images inside cards get the card shape */
+body.rm-m3 .blog__post-thumb img,
+body.rm-m3 .blog__post-thumb-three img,
+body.rm-m3 .services__thumb img,
+body.rm-m3 .team__thumb img,
+body.rm-m3 .support__thumb img { border-radius: var(--md-shape-lg); }
+
+/* Blog cards */
+body.rm-m3 .blog__post-item,
+body.rm-m3 .blog__post-item-three { background: var(--md-sys-color-surface-container-lowest); }
+body.rm-m3 .blog__post-title a:hover { color: var(--md-sys-color-primary-strong); }
+
+/* Team */
+body.rm-m3 .team__item {
+  background: var(--md-sys-color-surface-container-low);
+  border: 0;
+  padding: 20px;
+}
+
+/* --------------------------------------------------------------- FAQ (accordion) */
+/* One Material 3 accordion for every FAQ style (faq__wrap, -two, -three) */
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) { margin-left: 0; }
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-item {
+  border: 1px solid transparent;
+  border-radius: var(--md-shape-lg) !important;
+  background: var(--md-sys-color-surface-container-low);
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: none;
+  transition: background-color .2s var(--md-motion), border-color .2s var(--md-motion);
+}
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-item:last-child { margin-bottom: 0; }
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-item:has(.accordion-button:not(.collapsed)),
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-item.active {
+  background: var(--md-sys-color-primary-container-low);
+  border-color: var(--md-sys-color-primary-container);
+}
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 64px;
+  padding: 18px 72px 18px 24px;
+  font-size: clamp(16px, 1rem + .25vw, 18px);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--md-sys-color-on-surface);
+  background: transparent !important;
+  border: 0;
+  border-bottom: 0;
+  border-radius: var(--md-shape-lg) !important;
+  box-shadow: none;
+}
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button:hover { background: rgba(var(--md-sys-color-primary-rgb), .05) !important; }
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button:not(.collapsed) { color: var(--md-sys-color-on-surface); }
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button span { color: var(--md-sys-color-primary-strong); font-weight: 700; flex: 0 0 auto; }
+/* Expand / collapse icon: round tonal button that turns primary when open */
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button::before {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-primary-strong);
+  box-shadow: var(--md-elev-1);
+  transition: background-color .2s var(--md-motion), color .2s var(--md-motion);
+}
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button:not(.collapsed)::before {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  box-shadow: none;
+}
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button:focus-visible { outline: 3px solid var(--md-sys-color-primary-strong); outline-offset: -3px; }
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-body { padding: 0 72px 22px 24px; }
+body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-body p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--md-sys-color-on-surface-variant);
+}
+@media (max-width: 767.98px) {
+  body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button { padding: 16px 64px 16px 18px; }
+  body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-button::before { right: 14px; }
+  body.rm-m3 :is(.faq__wrap, .faq__wrap-two, .faq__wrap-three) .accordion-body { padding: 0 18px 18px; }
+}
+/* ------------------------------------------------------------ forms (outlined text fields) */
+body.rm-m3 input[type="text"],
+body.rm-m3 input[type="email"],
+body.rm-m3 input[type="tel"],
+body.rm-m3 input[type="url"],
+body.rm-m3 input[type="password"],
+body.rm-m3 input[type="search"],
+body.rm-m3 input[type="number"],
+body.rm-m3 select:not(.language__select select),
+body.rm-m3 textarea,
+body.rm-m3 .nice-select:not(.language__select .nice-select) {
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-shape-sm);
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-font);
+  transition: border-color .15s var(--md-motion), box-shadow .15s var(--md-motion);
+}
+body.rm-m3 input:focus,
+body.rm-m3 select:focus,
+body.rm-m3 textarea:focus,
+body.rm-m3 .nice-select.open {
+  border-color: var(--md-sys-color-primary-strong);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-primary-strong);
+  outline: none;
+}
+body.rm-m3 input::placeholder,
+body.rm-m3 textarea::placeholder { color: var(--md-sys-color-outline); }
+body.rm-m3 input[type="checkbox"],
+body.rm-m3 input[type="radio"] { accent-color: var(--md-sys-color-primary-strong); }
+
+/* Domain search bar → M3 search bar */
+body.rm-m3 .domain__search-form form,
+body.rm-m3 .banner__domain form,
+body.rm-m3 .domain-search-form form {
+  border-radius: var(--md-shape-xl);
+  background: var(--md-sys-color-surface-container-high);
+  border-color: transparent;
+}
+
+/* --------------------------------------------------------------- tables */
+body.rm-m3 table { border-collapse: separate; border-spacing: 0; border: 1px solid var(--md-sys-color-outline-variant); border-radius: var(--md-shape-lg); overflow: hidden; }
+body.rm-m3 table th { background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface); font-weight: 600; }
+body.rm-m3 table td, body.rm-m3 table th { border-color: var(--md-sys-color-outline-variant); }
+body.rm-m3 table tr:nth-child(even) td { background: var(--md-sys-color-surface-container-low); }
+
+/* --------------------------------------------------------------- page header */
+body.rm-m3 .breadcrumb__area {
+  background: linear-gradient(180deg, var(--md-sys-color-primary-container-low) 0%, var(--md-sys-color-surface-bright) 100%);
+}
+body.rm-m3 .breadcrumb__content .title { font-size: clamp(2rem, 1.5rem + 2vw, 3rem); letter-spacing: -0.02em; }
+body.rm-m3 .breadcrumb__content nav,
+body.rm-m3 .breadcrumb__content .breadcrumb {
+  display: inline-flex; padding: 6px 14px; border-radius: var(--md-shape-full);
+  background: var(--md-sys-color-surface-container-lowest); box-shadow: var(--md-elev-1);
+}
+
+/* ------------------------------------------------------------- dark sections */
+body.rm-m3 .footer__offer {
+  background: var(--md-sys-color-inverse-surface);
+  border-radius: var(--md-shape-xl);
+  box-shadow: var(--md-elev-2);
+}
+
+/* --------------------------------------------------------------- footer */
+body.rm-m3 .footer__bottom-menu a:hover,
+body.rm-m3 .footer__widget a:hover,
+body.rm-m3 .footer__link a:hover { color: var(--md-sys-color-primary-strong); }
+
+/* ------------------------------------------------------------- header / nav */
+body.rm-m3 .rm-site-header { background: color-mix(in srgb, var(--md-sys-color-surface-bright) 88%, transparent); backdrop-filter: saturate(1.4) blur(12px); }
+body.rm-m3 .rm-site-header .rm-site-menu > li > a:hover,
+body.rm-m3 .rm-site-header .rm-site-menu > li.current-menu-item > a { color: var(--md-sys-color-primary-strong); }
+body.rm-m3 .rm-site-header .rm-site-menu .rm-menu-login > a.rm-nav-link {
+  background: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); border-radius: var(--md-shape-full);
+}
+body.rm-m3 .rm-site-header .rm-site-menu .rm-menu-login > a .rm-nav-icon { color: var(--md-sys-color-on-primary); }
+body.rm-m3 .rm-site-header .rm-site-menu > li.rm-menu-login > a.rm-nav-link:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary)); border-color: transparent;
+}
+body.rm-m3 .rm-mega-panel,
+body.rm-m3 .rm-site-header .sub-menu { border-radius: var(--md-shape-lg); box-shadow: var(--md-elev-3); border-color: var(--md-sys-color-outline-variant); }
+
+/* Scroll-to-top FAB */
+body.rm-m3 .scroll__top { width: 44px; height: 44px; right: 16px; border-radius: var(--md-shape-md); background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); box-shadow: var(--md-elev-2); }
+body.rm-m3 .scroll__top.open { bottom: 16px; }
+body.rm-m3 .scroll__top::after { display: none; }
+body.rm-m3 .scroll__top:hover { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+/* Leave room for the floating button next to the footer links on narrower screens */
+/* Space after the footer so the floating scroll-to-top button never covers the last row */
+body.rm-m3 .rm-fab-spacer { height: 76px; background: var(--md-sys-color-surface-container-lowest); }
+
+/* Logo marquee: brand chips instead of a wall of identical logos */
+body.rm-m3 .brand__item img { height: 48px; max-height: none; width: auto; max-width: none; }
+
+/* Review summary logo should be a small badge, not a full-width image */
+body.rm-m3 .rating__logo img,
+body.rm-m3 .review__logo img,
+body.rm-m3 [class*="rating"] .logo img { max-width: 160px; height: auto; }
+
+/* --------------------------------------------------------------- blog sidebar */
+body.rm-m3 .cg-side-widget,
+body.rm-m3 .sidebar .widget,
+body.rm-m3 .widget-area .widget {
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--md-shape-xl);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+body.rm-m3 .widget-area .widget-title,
+body.rm-m3 .sidebar .widget-title,
+body.rm-m3 .widget .wp-block-heading { font-size: 18px; margin-bottom: 12px; }
+body.rm-m3 .cg-side-widget .wp-block-search__label { font-size: 18px; font-weight: 600; color: var(--md-sys-color-on-surface); margin-bottom: 10px; }
+body.rm-m3 .cg-side-widget .wp-block-search__inside-wrapper { gap: 8px; }
+body.rm-m3 .cg-side-widget .wp-block-search__input { min-height: 44px; padding: 0 14px; }
+body.rm-m3 .cg-side-widget .wp-block-search__button { margin: 0; }
+body.rm-m3 .cg-side-widget ul, body.rm-m3 .widget ul { list-style: none; padding-left: 0; margin: 0; }
+body.rm-m3 .cg-side-widget ul li, body.rm-m3 .widget ul li { padding: 6px 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+body.rm-m3 .cg-side-widget ul li:last-child, body.rm-m3 .widget ul li:last-child { border-bottom: 0; }
+body.rm-m3 .cg-side-widget a, body.rm-m3 .widget a { color: var(--md-sys-color-on-surface); }
+body.rm-m3 .cg-side-widget a:hover, body.rm-m3 .widget a:hover { color: var(--md-sys-color-primary-strong); }
+
+/* --------------------------------------------------------------- motion */
+@media (prefers-reduced-motion: reduce) {
+  body.rm-m3 *, body.rm-m3 *::before, body.rm-m3 *::after { transition: none !important; animation: none !important; }
+}
+
+/* Hero call-to-action: always the filled primary button (readable on dark and light heroes) */
+body.rm-m3 .hosting__top-area .tg-black-btn-two,
+body.rm-m3 .banner__content .tg-black-btn-two {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+body.rm-m3 .hosting__top-area .tg-black-btn-two:hover,
+body.rm-m3 .banner__content .tg-black-btn-two:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 88%, var(--md-sys-color-on-primary));
+  color: var(--md-sys-color-on-primary);
+}
+
+/* Text-only links use the darker primary tone for readable contrast */
+body.rm-m3 .domain__price-btn .transfer,
+body.rm-m3 .footer__info a,
+body.rm-m3 .breadcrumb a { color: var(--md-sys-color-primary-strong); font-weight: 600; }
+body.rm-m3 .domain__price-btn .transfer:hover { color: var(--md-sys-color-primary-strong-hover); }
+
+/* Selected / hovered outlined button becomes a filled button (e.g. featured "Choose Plan") */
+body.rm-m3 .tg-border-btn.active,
+body.rm-m3 .tg-border-btn:hover,
+body.rm-m3 .tg-border-btn-two.active {
+  background: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+body.rm-m3 .tg-border-btn.active svg, body.rm-m3 .tg-border-btn:hover svg { color: inherit; }
+/* Elementor pricing widgets store a transparent hover/active background; keep the selected plan filled */
+body.rm-m3 .pricing__btn .tg-btn.active,
+body.rm-m3 .pricing__btn .tg-border-btn:hover {
+  background-color: var(--md-sys-color-primary) !important;
+  border-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+/* =====================================================================
+   Button hover system (site-wide)
+   Elementor paints hover backgrounds with a gradient image and a transparent
+   colour; its lazy-load feature strips background images, which left white
+   text/icons on a white hover. Hover colours are therefore set as a solid
+   background-colour here, and icons always follow the text colour.
+   ===================================================================== */
+
+/* Icons inside any button use the button's text colour in every state */
+body.rm-m3 :is(.tg-btn, .elementor-button, .rm-cart-button, .wp-element-button, .rm-nav-link) svg { color: inherit; }
+body.rm-m3 :is(.tg-btn, .elementor-button, .rm-cart-button, .wp-element-button, .rm-nav-link) svg :is(path, circle, rect, line, polyline, polygon, ellipse)[fill]:not([fill="none"]),
+body.rm-m3 :is(.tg-btn, .elementor-button, .rm-cart-button, .wp-element-button, .rm-nav-link) svg[fill]:not([fill="none"]) { fill: currentColor; }
+body.rm-m3 :is(.tg-btn, .elementor-button, .rm-cart-button, .wp-element-button, .rm-nav-link) svg :is(path, circle, rect, line, polyline, polygon, ellipse)[stroke]:not([stroke="none"]),
+body.rm-m3 :is(.tg-btn, .elementor-button, .rm-cart-button, .wp-element-button, .rm-nav-link) svg[stroke]:not([stroke="none"]) { stroke: currentColor; }
+body.rm-m3 :is(.tg-btn, .elementor-button) :is(i, span, .icon, .text) { color: inherit; }
+
+/* Filled hover for every button style (filled, outlined, white, dark, pricing, cards) */
+body.rm-m3 .tg-btn:not(.tg-link-btn):is(:hover, :focus-visible),
+body.rm-m3 .elementor-button:is(:hover, :focus-visible),
+body.rm-m3 .wp-element-button:is(:hover, :focus-visible),
+body.rm-m3 input[type="submit"]:is(:hover, :focus-visible),
+body.rm-m3 button[type="submit"]:not(.rm-menu-toggle):is(:hover, :focus-visible),
+body.rm-m3 .rm-cart-primary:hover:not(:disabled) {
+  background-color: var(--md-sys-color-primary-hover) !important;
+  background-image: none !important;
+  border-color: var(--md-sys-color-primary-hover) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+/* Theme hover effects that slide a coloured ::before layer in must not cover the label */
+body.rm-m3 .tg-btn:not(.tg-link-btn):is(:hover, :focus-visible)::before { background: var(--md-sys-color-primary-hover) !important; }
+
+/* Text buttons (links with an arrow) stay text-only on hover */
+body.rm-m3 .tg-link-btn:is(:hover, :focus-visible) { background: none !important; color: var(--md-sys-color-primary-strong-hover) !important; }
+/* …but on dark sections they use the light tone */
+body.rm-m3 :is(.footer__offer, .hosting__top-bg-two, [data-rm-dark]) .tg-link-btn,
+body.rm-m3 :is(.footer__offer, .hosting__top-bg-two, [data-rm-dark]) .tg-link-btn:hover { color: var(--md-sys-color-inverse-primary) !important; }
+
+/* Hero call-to-action buttons are always filled primary (Elementor paints some with a white gradient) */
+body.rm-m3 .hosting__top-area .tg-btn:not(.tg-link-btn) {
+  background-color: var(--md-sys-color-primary) !important;
+  background-image: none !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+/* Footer language picker: dark tonal pill, readable white label */
+body.rm-m3 .language__select select {
+  background-color: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border: 1px solid var(--md-sys-color-inverse-surface-high);
+  border-radius: var(--md-shape-full);
+  padding: 6px 30px 6px 14px;
+  min-height: 34px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Contact links (email / phone) on light surfaces use the readable primary tone */
+body.rm-m3 a[href^="mailto:"]:not(.tg-btn),
+body.rm-m3 a[href^="tel:"]:not(.tg-btn) { color: var(--md-sys-color-primary-strong); }
+body.rm-m3 a[href^="mailto:"]:not(.tg-btn):hover,
+body.rm-m3 a[href^="tel:"]:not(.tg-btn):hover { color: var(--md-sys-color-primary-strong-hover); }

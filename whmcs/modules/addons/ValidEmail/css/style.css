@@ -1,0 +1,23 @@
+.addborder {
+    border: 1px solid red !important;
+}
+
+.d-none {
+    display: none !important;
+}
+
+@media only screen and (min-width: 1200px) {
+    .modal-dialog {
+        width: 46% !important;
+    }
+}
+
+.custom-title {
+    font-size: 19px;
+    float: left;
+    font-weight: 400;
+}
+
+#customBodyModal {
+    font-size: 15px;
+}
