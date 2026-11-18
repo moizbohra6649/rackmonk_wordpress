@@ -137,10 +137,10 @@ class Rackmonk_Client_Area {
         <form method="post" class="rm-auth-register-form" action="<?php echo esc_url(self::register_url()); ?>">
             <input type="hidden" name="rm_auth_action" value="register"><?php wp_nonce_field('rackmonk-register', 'rackmonk-register-nonce'); ?>
             <div hidden aria-hidden="true"><label>Website URL<input type="text" name="rm_company_url" tabindex="-1" autocomplete="off"></label></div>
-            <fieldset><legend>01 <span>Personal information</span></legend><div class="rm-auth-grid2cols">
+            <fieldset><legend><span>Personal information</span></legend><div class="rm-auth-grid2cols">
             <?php self::field('firstname', 'First name', 'text', $needed('firstname'), 'given-name'); self::field('lastname', 'Last name', 'text', $needed('lastname'), 'family-name'); self::field('email', 'Email address', 'email', true, 'email'); self::field('phonenumber', 'Phone number with country code', 'tel', true, 'tel'); ?>
             </div></fieldset>
-            <fieldset><legend>02 <span>Billing details</span></legend><div class="rm-auth-grid2cols">
+            <fieldset><legend><span>Billing details</span></legend><div class="rm-auth-grid2cols">
             <?php self::field('companyname', 'Company name', 'text', false, 'organization', true); self::field('address1', 'Street address', 'text', $needed('address1'), 'address-line1', true); self::field('address2', 'Apartment, suite or address line 2', 'text', false, 'address-line2', true); ?>
             <div class="rm-auth-field"><label for="rm_country">Country <span aria-hidden="true">*</span></label><select id="rm_country" name="country" required autocomplete="country"><?php foreach ($countries as $code => $name): ?><option value="<?php echo esc_attr($code); ?>" <?php selected($country, $code); ?>><?php echo esc_html($name); ?></option><?php endforeach; ?></select></div>
             <div class="rm-auth-field" id="rm_state_field"><label for="rm_state">State / region <?php echo $needed('state') ? '<span aria-hidden="true">*</span>' : '<small>(optional)</small>'; ?></label>
@@ -148,11 +148,11 @@ class Rackmonk_Client_Area {
             <?php self::field('city', 'City', 'text', $needed('city'), 'address-level2'); self::field('postcode', 'Postcode / ZIP', 'text', $needed('postcode'), 'postal-code'); if (!empty($schema['tax_enabled'])) self::field('tax_id', $schema['tax_label'] ?? 'Tax ID / GSTIN', 'text', false, 'off', true); ?>
             </div></fieldset>
             <?php $fields = $schema['custom_fields'] ?? []; $currencies = $schema['currencies'] ?? []; if ($fields || count($currencies) > 1): ?>
-            <fieldset><legend>03 <span>Additional information</span></legend><div class="rm-auth-grid2cols">
+            <fieldset><legend><span>Additional information</span></legend><div class="rm-auth-grid2cols">
             <?php foreach ($fields as $field) self::custom_field($field); ?>
             <?php if ($currencies): ?><div class="rm-auth-field"><label for="rm_currency">Hosting billing currency</label><select id="rm_currency" name="currency"><?php foreach ($currencies as $currency): ?><option value="<?php echo (int) $currency['id']; ?>" <?php selected((int) self::posted('currency', !empty($currency['default']) ? (string) $currency['id'] : ''), (int) $currency['id']); ?>><?php echo esc_html($currency['code']); ?></option><?php endforeach; ?></select></div><?php endif; ?>
             </div></fieldset><?php elseif ($currencies): ?><input type="hidden" name="currency" value="<?php echo (int) $currencies[0]['id']; ?>"><?php endif; ?>
-            <fieldset><legend><?php echo $fields || count($currencies) > 1 ? '04' : '03'; ?> <span>Account security</span></legend><div class="rm-auth-grid2cols">
+            <fieldset><legend><span>Account security</span></legend><div class="rm-auth-grid2cols">
             <?php self::field('password', 'Password', 'password', true, 'new-password'); self::field('password_confirm', 'Confirm password', 'password', true, 'new-password'); ?>
             <output class="rm-auth-meter rm-auth-full" data-password-strength="rm_password">Use 12-64 characters. Choose a unique password.</output>
             <?php if (!empty($schema['security_questions'])): ?><div class="rm-auth-field rm-auth-full"><label for="rm_securityqid">Security question <span aria-hidden="true">*</span></label><select id="rm_securityqid" name="securityqid" required><option value="">Choose a question</option><?php foreach ($schema['security_questions'] as $question): ?><option value="<?php echo (int) $question['id']; ?>" <?php selected((int) self::posted('securityqid'), (int) $question['id']); ?>><?php echo esc_html($question['question']); ?></option><?php endforeach; ?></select></div><?php self::field('securityqans', 'Security answer', 'password', true, 'off', true); endif; ?>

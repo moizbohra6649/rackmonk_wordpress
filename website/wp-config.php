@@ -91,6 +91,11 @@ define('WP_DEBUG', false);
 
 /* Add any custom values between this line and the "stop editing" line. */
 
+// Override migrated database URLs on production without changing local development.
+if (in_array(strtolower($_SERVER['HTTP_HOST'] ?? ''), array('rackmonk.in', 'www.rackmonk.in'), true)) {
+	define('WP_HOME', 'https://rackmonk.in/rackmonk_wordpress/website');
+	define('WP_SITEURL', 'https://rackmonk.in/rackmonk_wordpress/website');
+}
 
 
 /* That's all, stop editing! Happy publishing. */
