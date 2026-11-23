@@ -40,6 +40,8 @@ require_once RACKMONK_WHMCS_DIR . 'includes/class-navigation.php';
 new Rackmonk_Navigation();
 require_once RACKMONK_WHMCS_DIR . 'includes/class-reviews.php';
 Rackmonk_Reviews::boot();
+require_once RACKMONK_WHMCS_DIR . 'includes/class-site-migrations.php';
+Rackmonk_Site_Migrations::boot();
 
 // Register Elementor Widget
 add_action('elementor/widgets/register', function($widgets_manager) {
