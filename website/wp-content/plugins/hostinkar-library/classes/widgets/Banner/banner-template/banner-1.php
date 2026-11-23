@@ -18,14 +18,14 @@
                 <?php $price_source = $settings['rackmonk_price_source'] ?? 'auto';
                 $banner_text = static function ($key, $default) { return esc_html(class_exists('Rackmonk_Site_Content') ? \Rackmonk_Site_Content::text($key, $default) : $default); };
                 if ($price_source === 'catalog' || ($price_source === 'auto' && is_front_page() && $this->get_id() === '1e35ce6')) :
-                    $rate = class_exists('Rackmonk_Plans_Manager') && class_exists('Rackmonk_Website_Cart') ? \Rackmonk_Plans_Manager::get_instance()->get_lowest_inr_cart_rate() : null;
+                    $rate = class_exists('Rackmonk_Plans_Manager') && class_exists('Rackmonk_Website_Cart') ? \Rackmonk_Plans_Manager::get_instance()->get_lowest_cart_rate() : null;
                     if ($rate) : ?>
                     <div class="banner__price">
-                        <span><?php echo $banner_text('banner_start_label', 'Start with'); ?> <strong>&#8377;<?php echo esc_html(number_format(ceil($rate['cents'] / $rate['months']) / 100, 2)); ?></strong>/mo</span>
+                        <span><?php echo $banner_text('banner_start_label', 'Start with'); ?> <strong><?php echo esc_html(\Rackmonk_Currency::format(ceil($rate['cents'] / $rate['months']) / 100, null, 2)); ?></strong>/mo</span>
                         <?php if ($rate['monthly'] !== null && $rate['monthly'] * $rate['months'] > $rate['cents']) : ?>
-                            <p><?php echo $banner_text('banner_monthly_label', 'Monthly billing'); ?> &#8377;<?php echo esc_html(number_format($rate['monthly'] / 100, 2)); ?>/mo</p>
+                            <p><?php echo $banner_text('banner_monthly_label', 'Monthly billing'); ?> <?php echo esc_html(\Rackmonk_Currency::format($rate['monthly'] / 100, null, 2)); ?>/mo</p>
                         <?php endif; ?>
-                        <p>For <?php echo esc_html($rate['months']); ?> <?php echo $banner_text('banner_term_label', 'Months Term'); ?><?php if ($rate['setup'] > 0) : ?>; setup &#8377;<?php echo esc_html(number_format($rate['setup'] / 100, 2)); ?><?php endif; ?>. <?php echo $banner_text('banner_tax_note', 'Taxes extra.'); ?></p>
+                        <p>For <?php echo esc_html($rate['months']); ?> <?php echo $banner_text('banner_term_label', 'Months Term'); ?><?php if ($rate['setup'] > 0) : ?>; setup <?php echo esc_html(\Rackmonk_Currency::format($rate['setup'] / 100, null, 2)); ?><?php endif; ?>. <?php echo $banner_text('banner_tax_note', 'Taxes extra.'); ?></p>
                     </div>
                     <?php else : ?>
                     <div class="banner__price"><span><?php echo $banner_text('banner_unavailable', '48-month pricing will be available once configured.'); ?></span></div>

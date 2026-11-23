@@ -110,6 +110,7 @@ $(".tg-header__top-close").on("click", function () {
 	=        Brand Active		      =
 =============================================*/
 function hostingBrandActive($scope, $) {
+if (!$scope.find('.brand-active').length) return;
 var brandSwiper = new Swiper('.brand-active', {
     // Optional parameters
     slidesPerView: 5,
@@ -182,36 +183,34 @@ function hostingServiceActive($scope, $) {
 	=        Testimonial Active		      =
 =============================================*/
 function hostingTestimonialTwoActive($scope, $) {
-    var brandSwiper = new Swiper('.testimonial-active-two', {
-        // Optional parameters
-        slidesPerView: 4,
+    $scope.find('.testimonial-active-two').each(function () {
+        if (this.swiper) this.swiper.destroy(true, true);
+        var navigationRoot = this.parentElement;
+        while (navigationRoot.parentElement && !navigationRoot.querySelector('.testimonial-button-next')) {
+            navigationRoot = navigationRoot.parentElement;
+        }
+        var next = navigationRoot.querySelector('.testimonial-button-next');
+        var previous = navigationRoot.querySelector('.testimonial-button-prev');
+        if (next) next.setAttribute('aria-label', 'Next review');
+        if (previous) previous.setAttribute('aria-label', 'Previous review');
+        new Swiper(this, {
+        slidesPerView: 1,
         spaceBetween: 24,
         loop: true,
+        watchOverflow: true,
         breakpoints: {
-            '1500': {
-                slidesPerView: 4,
-            },
             '1200': {
-                slidesPerView: 4,
-            },
-            '992': {
                 slidesPerView: 3,
             },
             '768': {
-                slidesPerView: 3,
-            },
-            '576': {
                 slidesPerView: 2,
             },
-            '0': {
-                slidesPerView: 1,
-            },
         },
-        // And if we need scrollbar
         navigation: {
-            nextEl: ".testimonial-button-next",
-            prevEl: ".testimonial-button-prev"
+            nextEl: next,
+            prevEl: previous
         },
+        });
     });
 }
 

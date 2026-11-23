@@ -32,11 +32,13 @@ class Rackmonk_REST_API {
     public function get_plans_response($request) {
         $gid = $request->get_param('gid');
         $plans = Rackmonk_Plans_Manager::get_instance()->get_plans($gid);
-        return rest_ensure_response([
+        $response = rest_ensure_response([
             'success'       => true,
             'default_cycle' => '48',
             'plans'         => $plans,
         ]);
+        $response->header('Cache-Control', 'private, no-store');
+        return $response;
     }
 
     public function get_categories_response($request) {
@@ -48,6 +50,7 @@ class Rackmonk_REST_API {
     }
 
     public function ajax_get_plans() {
+        nocache_headers();
         $gid = isset($_GET['gid']) ? intval($_GET['gid']) : null;
         $plans = Rackmonk_Plans_Manager::get_instance()->get_plans($gid);
         wp_send_json_success([
@@ -58,4 +61,3 @@ class Rackmonk_REST_API {
 }
 
 new Rackmonk_REST_API();
-

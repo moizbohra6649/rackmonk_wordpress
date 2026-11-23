@@ -124,6 +124,13 @@ class Rackmonk_Site_Content {
             'pricing_choose' => 'Choose Plan',
             'pricing_features' => 'Top Features Included:',
             'pricing_unavailable' => 'Unavailable',
+            // Elementor "xHosting Pricing" widget when it shows WHMCS plans (hosting pages / homepage).
+            'pricing_cards_tab_48' => '48 Months (Save up to 70%)',
+            'pricing_cards_tab_12' => '12 Months (Save 50%)',
+            'pricing_cards_badge' => 'Most Popular',
+            'pricing_cards_button' => 'Choose Plan',
+            'pricing_cards_period_48' => '/mo',
+            'pricing_cards_period_12' => '/mo (12M)',
         ];
         foreach (['Rackmonk_Website_Cart', 'Rackmonk_Website_Checkout', 'Rackmonk_Client_Area', 'Rackmonk_Navigation'] as $class) {
             if (is_callable([$class, 'content_defaults'])) $defaults = array_merge($defaults, $class::content_defaults());

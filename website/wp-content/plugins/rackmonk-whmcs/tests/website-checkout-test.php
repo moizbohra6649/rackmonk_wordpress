@@ -1,6 +1,7 @@
 <?php
 /** Dependency-free checkout boundary tests. No live orders, sessions or payments. */
 if (PHP_SAPI !== 'cli') exit;
+define('RACKMONK_CART_BOUNDARY_ONLY', true);
 require __DIR__ . '/website-cart-test.php';
 require dirname(__DIR__) . '/includes/class-website-checkout.php';
 
@@ -39,7 +40,7 @@ rejects(function () use ($item) { Rackmonk_Website_Checkout::price_item($item); 
 $store_currency = 'INR';
 rejects(function () use ($item) { $item['revision'] = 'stale'; Rackmonk_Website_Checkout::price_item($item); }, 'Reject stale configuration');
 rejects(function () use ($item) { $item['choices']['option_9'] = 'removed'; Rackmonk_Website_Checkout::price_item($item); }, 'Reject removed choices');
-rejects(function () use ($item) { $item['months'] = 48; Rackmonk_Website_Checkout::price_item($item); }, 'Reject direct 48-month WooCommerce checkout submissions');
+check(Rackmonk_Website_Checkout::price_item(array_merge($item, ['months' => 48]))['total'] > 0, 'Existing 48-month checkout uses server prices');
 $native_db->prices[30]['annually'] = '151.00';
 rejects(function () use ($item) { Rackmonk_Website_Checkout::price_item($item); }, 'Reject quote after native option price changes');
 $native_db->prices[30]['annually'] = '150.00';
@@ -75,9 +76,10 @@ $bridge->validate_cart();
 check(count($notices) === 2, 'Direct purchase without configuration is blocked');
 $legacy = $item;
 $legacy['months'] = 48;
+$legacy['revision'] = 'stale-legacy-revision';
 $commerce->cart->cart_contents = [['rackmonk_configuration' => $legacy, 'data' => $product]];
 $bridge->validate_cart();
-check(count($notices) === 3 && str_contains($notices[2], 'directly through WHMCS'), 'Saved legacy 48-month WooCommerce cart line cannot checkout');
+check(count($notices) === 2 && str_contains($notices[0], 'needs review'), 'Saved stale 48-month cart line requires review without duplicate notices');
 rejects(function () use ($bridge, $legacy, $product) { $bridge->order_item(new CheckoutLine(), 'legacy', ['rackmonk_configuration' => $legacy, 'data' => $product], null); }, 'Reject legacy 48-month order-line creation');
 $key = str_repeat('a', 32);
 $commerce->cart->cart_contents = [$key => ['rackmonk_configuration' => $quote, 'quantity' => 3]];

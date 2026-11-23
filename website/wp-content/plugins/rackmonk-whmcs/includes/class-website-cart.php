@@ -86,7 +86,7 @@ class Rackmonk_Website_Cart {
         $settings = self::get_config($pid);
         if (!$settings || empty($settings['enabled'])) return null;
         if (!class_exists('Rackmonk_Plans_Manager')) throw new RuntimeException('WHMCS pricing is unavailable.');
-        return Rackmonk_Native_Cart_Pricing::config(Rackmonk_Plans_Manager::get_instance()->get_whmcs_db(), $pid, $settings);
+        return Rackmonk_Native_Cart_Pricing::config(Rackmonk_Plans_Manager::get_instance()->get_whmcs_db(), $pid, $settings, class_exists('Rackmonk_Currency') ? Rackmonk_Currency::current() : null);
     }
 
     public static function revision($config) {
@@ -418,7 +418,7 @@ class Rackmonk_Website_Cart {
                         <p>Native plan data is unavailable. Manual 48-month settings are preserved but cannot be edited until it is available.</p>
                     <?php endif; ?>
                 </div>
-                <div class="rm-resource-explanation"><strong>Preserved legacy website-only settings.</strong> The amounts and choices below do not determine customer quotes. Edit 1-36 month product and linked option prices in WHMCS. WooCommerce calculates checkout taxes; the WHMCS default currency must match the store currency.</div>
+                <div class="rm-resource-explanation"><strong>Preserved legacy website-only settings.</strong> The amounts and choices below do not determine customer quotes. Edit 1-36 month product and linked option prices in WHMCS. WooCommerce calculates checkout taxes; hosting-only carts use the selected billing currency.</div>
                 <div class="rm-resource-grid">
                 <?php foreach (self::RESOURCES as $key => $name):
                     $choices = $config['resources'][$key]['choices'] ?? [['id' => '0', 'label' => '', 'price' => '']];

@@ -299,6 +299,245 @@ final class Rackmonk_Vectors {
         return [400, 460, $b, 'slice'];
     }
 
+    /* ---- AI & GPU illustrations (480 × 360 artboard) ---- */
+
+    /** Four-point sparkle in any colour. */
+    private static function star4($x, $y, $r, $fill) {
+        $k = round($r * .28, 2);
+        return '<path d="M' . $x . ' ' . ($y - $r) . 'L' . ($x + $k) . ' ' . ($y - $k) . 'L' . ($x + $r) . ' ' . $y . 'L' . ($x + $k) . ' ' . ($y + $k) . 'L' . $x . ' ' . ($y + $r) . 'L' . ($x - $k) . ' ' . ($y + $k) . 'L' . ($x - $r) . ' ' . $y . 'L' . ($x - $k) . ' ' . ($y - $k) . 'Z" fill="' . $fill . '"/>';
+    }
+
+    /** Round AI assistant avatar (sparkle on the theme colour). */
+    private static function ai_avatar($cx, $cy, $r, $c) {
+        return '<circle cx="' . $cx . '" cy="' . $cy . '" r="' . $r . '" fill="' . $c['primary'] . '"/>' . self::star4($cx, $cy, round($r * .58, 1), $c['on-primary']);
+    }
+
+    /** Processor chip with pins on all sides; $s = outer size. */
+    private static function chip($x, $y, $s, $c, $label = 'AI') {
+        $pin = round($s * .12, 1); $in = round($s * .26, 1); $sw = max(2, round($s * .035, 1));
+        $d = '';
+        for ($i = 0; $i < 4; $i++) {
+            $p = round($in + ($s - 2 * $in) * ($i + .5) / 4, 1);
+            $d .= 'M' . $p . ' 0v' . $pin . 'M' . $p . ' ' . ($s - $pin) . 'v' . $pin . 'M0 ' . $p . 'h' . $pin . 'M' . ($s - $pin) . ' ' . $p . 'h' . $pin;
+        }
+        $b = '<g transform="translate(' . $x . ' ' . $y . ')"><path d="' . $d . '" stroke="' . $c['outline'] . '" stroke-width="' . $sw . '" stroke-linecap="round"/>';
+        $b .= '<rect x="' . $pin . '" y="' . $pin . '" width="' . ($s - 2 * $pin) . '" height="' . ($s - 2 * $pin) . '" rx="' . round($s * .16, 1) . '" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="2"/>';
+        $b .= '<rect x="' . $in . '" y="' . $in . '" width="' . ($s - 2 * $in) . '" height="' . ($s - 2 * $in) . '" rx="' . round($s * .1, 1) . '" fill="' . $c['primary'] . '"/>';
+        if ($label !== '') $b .= '<text x="' . ($s / 2) . '" y="' . round($s / 2 + $s * .085, 1) . '" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="' . round($s * .22) . '" font-weight="800" fill="' . $c['on-primary'] . '">' . self::t($label) . '</text>';
+        return $b . '</g>';
+    }
+
+    /** Cooling fan seen from the front. */
+    private static function fan($cx, $cy, $r, $c) {
+        $b = '<circle cx="' . $cx . '" cy="' . $cy . '" r="' . $r . '" fill="' . $c['inverse-surface-high'] . '"/>';
+        $b .= '<circle cx="' . $cx . '" cy="' . $cy . '" r="' . round($r - 3, 1) . '" fill="none" stroke="' . $c['inverse-on-surface'] . '" stroke-opacity=".25" stroke-width="2"/>';
+        $blade = 'M' . $cx . ' ' . $cy . 'q' . round($r * .55, 1) . ' ' . round(-$r * .25, 1) . ' ' . round($r * .78, 1) . ' ' . round($r * .2, 1);
+        $b .= '<g stroke="' . $c['inverse-on-surface'] . '" stroke-opacity=".55" stroke-width="' . max(2, round($r * .14, 1)) . '" stroke-linecap="round" fill="none">';
+        for ($k = 0; $k < 6; $k++) $b .= '<path d="' . $blade . '" transform="rotate(' . ($k * 60) . ' ' . $cx . ' ' . $cy . ')"/>';
+        return $b . '</g><circle cx="' . $cx . '" cy="' . $cy . '" r="' . round($r * .3, 1) . '" fill="' . $c['primary'] . '"/>';
+    }
+
+    /** Graphics card (side view): dark shroud, fans, bracket and gold contacts. */
+    private static function gpu_card($x, $y, $w, $h, $c, $fans = 2) {
+        $b = '<rect x="' . ($x + 8) . '" y="' . ($y + 12) . '" width="' . $w . '" height="' . $h . '" rx="18" fill="' . $c['primary-tone-20'] . '" opacity=".1"/>';
+        $b .= '<rect x="' . ($x - 12) . '" y="' . ($y - 8) . '" width="14" height="' . ($h + 34) . '" rx="4" fill="' . $c['outline-variant'] . '"/>';
+        $fx = round($x + $w * .16, 1); $fw = round($w * .46, 1);
+        $b .= '<rect x="' . $fx . '" y="' . ($y + $h - 6) . '" width="' . $fw . '" height="20" rx="3" fill="' . $c['outline-variant'] . '"/>';
+        $b .= '<path d="M' . ($fx + 6) . ' ' . ($y + $h + 7) . 'h' . ($fw - 12) . '" stroke="' . $c['warning'] . '" stroke-width="9" stroke-dasharray="5 3"/>';
+        $b .= '<rect x="' . $x . '" y="' . $y . '" width="' . $w . '" height="' . $h . '" rx="18" fill="' . $c['inverse-surface'] . '"/>';
+        $b .= '<rect x="' . ($x + 18) . '" y="' . ($y + 12) . '" width="' . ($w - 36) . '" height="6" rx="3" fill="' . $c['primary'] . '"/>';
+        $r = round($h * .32, 1); $cy = round($y + $h * .58, 1);
+        for ($i = 0; $i < $fans; $i++) $b .= self::fan(round($x + $w * ($i + .5) / $fans, 1), $cy, $r, $c);
+        return $b;
+    }
+
+    /** One GPU server in a rack: two fans, drive slot and status lights. */
+    private static function gpu_unit($x, $y, $w, $c, $lit = 2) {
+        $s = '<rect x="' . $x . '" y="' . $y . '" width="' . $w . '" height="46" rx="12" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="2"/>';
+        foreach ([0, 1] as $i) {
+            $fx = $x + 22 + $i * 24;
+            $s .= '<circle cx="' . $fx . '" cy="' . ($y + 23) . '" r="10" fill="' . $c['surface-container-high'] . '" stroke="' . $c['outline-variant'] . '" stroke-width="1.5"/><path d="M' . ($fx - 6) . ' ' . ($y + 23) . 'h12M' . $fx . ' ' . ($y + 17) . 'v12" stroke="' . $c['outline'] . '" stroke-width="2" stroke-linecap="round" opacity=".6"/><circle cx="' . $fx . '" cy="' . ($y + 23) . '" r="3.5" fill="' . $c['primary'] . '"/>';
+        }
+        if ($w >= 130) $s .= '<rect x="' . ($x + 64) . '" y="' . ($y + 18) . '" width="' . ($w - 120) . '" height="10" rx="5" fill="' . $c['surface-container-high'] . '"/>';
+        for ($i = 0; $i < 2; $i++) $s .= '<circle cx="' . ($x + $w - 22 - $i * 18) . '" cy="' . ($y + 23) . '" r="5" fill="' . ($i < $lit ? $c['primary'] : $c['outline-variant']) . '"/>';
+        return $s;
+    }
+
+    private static function pill($x, $y, $text, $c, $filled = false, $dot = true) {
+        $w = ($dot ? 52 : 32) + mb_strlen($text) * 9.2;
+        $b = '<g transform="translate(' . $x . ' ' . $y . ')"><rect width="' . round($w) . '" height="44" rx="22" fill="' . ($filled ? $c['primary'] : '#FFFFFF') . '"' . ($filled ? '' : ' stroke="' . $c['outline-variant'] . '" stroke-width="2"') . '/>';
+        if ($dot) $b .= '<circle cx="22" cy="22" r="9" fill="' . ($filled ? $c['on-primary'] : $c['primary']) . '"/>';
+        return $b . '<text x="' . ($dot ? 40 : 16) . '" y="28" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" fill="' . ($filled ? $c['on-primary'] : $c['on-surface']) . '">' . self::t($text) . '</text></g>';
+    }
+
+    /** Graphics card with speed lines: fast, GPU-ready hosting. */
+    private static function draw_gpu($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        foreach ([[30, 138, 52], [18, 168, 64], [36, 198, 44]] as [$x, $y, $l]) $b .= '<path d="M' . $x . ' ' . $y . 'h' . $l . '" stroke="' . $c['primary-fixed-dim'] . '" stroke-width="7" stroke-linecap="round"/>';
+        $b .= self::gpu_card(110, 124, 300, 116, $c, 2);
+        $b .= self::pill(296, 50, 'AI Ready', $c);
+        $b .= self::pill(64, 274, 'GPU', $c, true, false);
+        $b .= self::chip(352, 248, 76, $c, 'AI');
+        return [480, 360, $b . self::sparkles($c, [[96, 80, 10], [446, 150, 7]]), 'meet'];
+    }
+
+    /** Rack of GPU servers. */
+    private static function draw_gpu_rack($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $b .= '<rect x="150" y="70" width="180" height="230" rx="26" fill="' . $c['primary-tone-20'] . '"/>';
+        foreach ([0, 1, 2, 3] as $i) $b .= self::gpu_unit(166, 88 + $i * 52, 148, $c, $i === 1 ? 1 : 2);
+        $b .= '<rect x="120" y="296" width="240" height="14" rx="7" fill="' . $c['outline-variant'] . '"/>';
+        $b .= self::pill(318, 66, '99.9%', $c);
+        $b .= '<path d="M134 220h18" stroke="' . $c['primary'] . '" stroke-width="4" stroke-linecap="round"/>' . self::chip(48, 176, 88, $c, 'AI');
+        return [480, 360, $b . self::sparkles($c, [[96, 90, 10], [404, 250, 8]]), 'meet'];
+    }
+
+    /** AI processor with circuit traces. */
+    private static function draw_ai_chip($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $traces = ['M165 153H132V122H104', 'M165 189H72', 'M165 207H132V238H104', 'M315 153H348V122H376', 'M315 189H408', 'M315 207H348V238H376', 'M213 105V64', 'M267 105V64', 'M249 255V300'];
+        $nodes = [[104, 122], [72, 189], [104, 238], [376, 122], [408, 189], [376, 238], [213, 64], [267, 64], [249, 300]];
+        foreach ($traces as $i => $d) $b .= '<path d="' . $d . '" stroke="' . ($i % 3 === 1 ? $c['primary'] : $c['primary-fixed-dim']) . '" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+        foreach ($nodes as $i => [$x, $y]) $b .= '<circle cx="' . $x . '" cy="' . $y . '" r="9" fill="' . ($i % 3 === 1 ? $c['primary'] : '#FFFFFF') . '" stroke="' . $c['primary'] . '" stroke-width="4"/>';
+        $b .= self::chip(165, 105, 150, $c, 'AI');
+        return [480, 360, $b . self::sparkles($c, [[60, 80, 10], [424, 300, 8]]), 'meet'];
+    }
+
+    /** Neural network diagram. */
+    private static function draw_neural($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $b .= '<rect x="96" y="56" width="288" height="248" rx="28" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="2"/>';
+        $layers = [[150, [104, 180, 256]], [240, [92, 148, 212, 268]], [330, [140, 220]]];
+        $hot = [[0, 0], [1, 1], [2, 0], [0, 2], [1, 2], [2, 1]];
+        for ($l = 0; $l < 2; $l++) foreach ($layers[$l][1] as $y1) foreach ($layers[$l + 1][1] as $y2) $b .= '<path d="M' . $layers[$l][0] . ' ' . $y1 . 'L' . $layers[$l + 1][0] . ' ' . $y2 . '" stroke="' . $c['outline-variant'] . '" stroke-width="2"/>';
+        foreach ([[0, 1, 2], [3, 4, 5]] as $path) {
+            $d = '';
+            foreach ($path as $k => $p) { [$l, $n] = $hot[$p]; $d .= ($k ? 'L' : 'M') . $layers[$l][0] . ' ' . $layers[$l][1][$n]; }
+            $b .= '<path d="' . $d . '" stroke="' . $c['primary'] . '" stroke-width="4" fill="none" stroke-linejoin="round"/>';
+        }
+        foreach ($layers as $l => [$x, $ys]) foreach ($ys as $n => $y) {
+            $on = in_array([$l, $n], $hot, true);
+            $b .= '<circle cx="' . $x . '" cy="' . $y . '" r="15" fill="' . ($on ? $c['primary'] : '#FFFFFF') . '" stroke="' . ($on ? $c['primary'] : $c['primary-fixed-dim']) . '" stroke-width="3"/>';
+        }
+        $b .= self::pill(318, 268, 'AI Model', $c);
+        return [480, 360, $b . self::sparkles($c, [[64, 84, 10], [424, 72, 8]]), 'meet'];
+    }
+
+    /** App window with an AI assistant conversation. */
+    private static function draw_ai_chat($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $inner = self::ai_avatar(104, 130, 16, $c)
+            . '<rect x="128" y="112" width="176" height="44" rx="16" fill="' . $c['surface-container'] . '"/><rect x="144" y="124" width="132" height="8" rx="4" fill="' . $c['on-surface'] . '" opacity=".75"/><rect x="144" y="138" width="96" height="8" rx="4" fill="' . $c['outline-variant'] . '"/>'
+            . '<rect x="196" y="170" width="190" height="36" rx="16" fill="' . $c['primary-container'] . '"/><rect x="212" y="184" width="150" height="8" rx="4" fill="' . $c['primary-strong'] . '" opacity=".7"/>'
+            . self::ai_avatar(104, 234, 16, $c)
+            . '<rect x="128" y="218" width="200" height="34" rx="16" fill="' . $c['surface-container'] . '"/><rect x="144" y="231" width="150" height="8" rx="4" fill="' . $c['on-surface'] . '" opacity=".6"/>'
+            . '<rect x="90" y="264" width="262" height="24" rx="12" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="2"/><rect x="104" y="273" width="110" height="6" rx="3" fill="' . $c['outline-variant'] . '"/><circle cx="338" cy="276" r="8" fill="' . $c['primary'] . '"/>';
+        $b .= self::browser(70, 60, 340, 236, $c, $inner);
+        $b .= self::chip(370, 212, 92, $c, 'AI');
+        return [480, 360, $b . self::sparkles($c, [[52, 70, 10], [440, 64, 8]]), 'meet'];
+    }
+
+    /** Cloud with an AI chip, connected to GPU nodes. */
+    private static function draw_ai_cloud($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $b .= '<path d="M150 236h190a54 54 0 0 0 6-107.6A78 78 0 0 0 196 116a62 62 0 0 0-46 120z" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="3"/>';
+        $b .= self::chip(206, 140, 68, $c, 'AI');
+        foreach ([[150, 296], [240, 306], [330, 296]] as [$x, $y]) {
+            $b .= '<path d="M240 236 L' . $x . ' ' . ($y - 18) . '" stroke="' . $c['outline-variant'] . '" stroke-width="3" stroke-dasharray="6 8"/>';
+            $b .= '<rect x="' . ($x - 30) . '" y="' . ($y - 22) . '" width="60" height="40" rx="12" fill="' . $c['inverse-surface'] . '"/>';
+            foreach ([-13, 13] as $dx) $b .= '<circle cx="' . ($x + $dx) . '" cy="' . ($y - 2) . '" r="10" fill="' . $c['inverse-surface-high'] . '"/><circle cx="' . ($x + $dx) . '" cy="' . ($y - 2) . '" r="3.5" fill="' . $c['primary'] . '"/>';
+        }
+        return [480, 360, $b . self::sparkles($c, [[90, 110, 11], [392, 80, 8], [410, 200, 6]]), 'meet'];
+    }
+
+    /** Monitoring dashboard for AI apps: usage bars and a falling training curve. */
+    private static function draw_ai_dashboard($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $inner = '';
+        foreach ([54, 88, 70, 116, 98, 140] as $i => $v) $inner .= '<rect x="' . (104 + $i * 40) . '" y="' . (260 - $v) . '" width="26" height="' . $v . '" rx="8" fill="' . ($i === 5 ? $c['primary'] : $c['primary-container']) . '"/>';
+        $inner .= '<path d="M110 118C150 150 180 182 228 192S300 208 330 212" stroke="' . $c['primary-strong'] . '" stroke-width="5" fill="none" stroke-linecap="round"/>';
+        $inner .= self::chip(346, 100, 46, $c, '');
+        $b .= self::browser(70, 60, 340, 220, $c, $inner);
+        $b .= '<g transform="translate(316 230)"><rect width="132" height="76" rx="20" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="2"/><text x="20" y="34" font-family="Inter,Arial,sans-serif" font-size="13" fill="' . $c['on-surface-variant'] . '">AI app</text><circle cx="26" cy="54" r="6" fill="' . $c['primary'] . '"/><text x="40" y="60" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="800" fill="' . $c['primary-strong'] . '">Online</text></g>';
+        return [480, 360, $b, 'meet'];
+    }
+
+    /** Security shield wired into a circuit. */
+    private static function draw_ai_shield($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        foreach (['M130 125H92V100H66', 'M130 170H70', 'M350 125H388V100H414', 'M350 170H410'] as $d) $b .= '<path d="' . $d . '" stroke="' . $c['primary-fixed-dim'] . '" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+        foreach ([[66, 100], [70, 170], [414, 100], [410, 170]] as [$x, $y]) $b .= '<circle cx="' . $x . '" cy="' . $y . '" r="8" fill="#FFFFFF" stroke="' . $c['primary'] . '" stroke-width="4"/>';
+        $b .= '<path d="M240 58l112 40v80c0 70-48 118-112 136-64-18-112-66-112-136V98z" fill="' . $c['primary'] . '"/>';
+        $b .= '<path d="M240 82l88 31v65c0 55-37 93-88 108z" fill="' . $c['primary-strong'] . '" opacity=".35"/>';
+        $b .= '<rect x="196" y="162" width="88" height="70" rx="16" fill="#FFFFFF"/><path d="M212 162v-16a28 28 0 0 1 56 0v16" stroke="#FFFFFF" stroke-width="12" fill="none"/>';
+        $b .= '<path d="M222 197l13 13 25-27" stroke="' . $c['primary-strong'] . '" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+        $b .= self::pill(330, 236, 'SSL ✓', $c, false, false);
+        return [480, 360, $b . self::sparkles($c, [[100, 262, 10], [382, 52, 8]]), 'meet'];
+    }
+
+    /** Support expert with a headset and an AI helper. */
+    private static function draw_ai_support($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $b .= '<circle cx="210" cy="170" r="90" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="3"/>';
+        $b .= self::person(210, 172, 84, 1, $c);
+        $b .= '<path d="M172 166v-10a38 38 0 0 1 76 0v10" stroke="' . $c['primary-tone-20'] . '" stroke-width="9" fill="none" stroke-linecap="round"/>';
+        $b .= '<rect x="160" y="152" width="20" height="34" rx="9" fill="' . $c['primary'] . '"/><rect x="240" y="152" width="20" height="34" rx="9" fill="' . $c['primary'] . '"/>';
+        $b .= '<path d="M250 184c0 18-12 26-28 26" stroke="' . $c['primary-tone-20'] . '" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="220" cy="210" r="6" fill="' . $c['primary-tone-20'] . '"/>';
+        $b .= '<g transform="translate(298 70)"><path d="M0 22a22 22 0 0 1 22-22h96a22 22 0 0 1 22 22v40a22 22 0 0 1-22 22H40l-22 20v-20A22 22 0 0 1 0 62z" fill="' . $c['primary'] . '"/>' . self::star4(44, 42, 16, $c['on-primary']) . '<text x="68" y="50" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="800" fill="' . $c['on-primary'] . '">AI</text></g>';
+        $b .= self::pill(316, 210, '24 × 7', $c, false, false);
+        return [480, 360, $b . self::sparkles($c, [[76, 96, 10]]), 'meet'];
+    }
+
+    /** Moving a site between GPU-ready servers. */
+    private static function draw_ai_migrate($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $b .= '<rect x="54" y="110" width="130" height="170" rx="22" fill="' . $c['surface-container-highest'] . '"/>';
+        foreach ([0, 1, 2] as $i) $b .= self::gpu_unit(66, 124 + $i * 50, 106, $c, 1);
+        $b .= '<rect x="296" y="90" width="130" height="190" rx="22" fill="' . $c['primary-tone-20'] . '"/>';
+        foreach ([0, 1, 2] as $i) $b .= self::gpu_unit(308, 106 + $i * 54, 106, $c, 2);
+        $b .= '<path d="M196 160c40-34 68-34 92 0" stroke="' . $c['primary'] . '" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="2 16"/><path d="M276 146l14 16-20 8" stroke="' . $c['primary'] . '" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+        $b .= self::pill(196, 214, 'FREE', $c, true, false);
+        return [480, 360, $b . self::sparkles($c, [[240, 76, 12]]), 'meet'];
+    }
+
+    /** Server terminal with a graphics card. */
+    private static function draw_gpu_vps($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $b .= '<rect x="64" y="60" width="300" height="210" rx="20" fill="' . $c['inverse-surface'] . '"/>';
+        foreach ([0, 1, 2] as $i) $b .= '<circle cx="' . (86 + $i * 16) . '" cy="80" r="5" fill="' . ($i === 0 ? $c['primary'] : $c['inverse-surface-high']) . '"/>';
+        $lines = ['$ ssh root@ai-vps', '✓ Ubuntu 24.04 LTS', '✓ Python + Docker ready', '$ _'];
+        foreach ($lines as $i => $txt) $b .= '<text x="88" y="' . (124 + $i * 34) . '" font-family="Consolas,Menlo,monospace" font-size="17" fill="' . ($i % 3 === 0 ? $c['inverse-primary'] : $c['inverse-on-surface']) . '">' . self::t($txt) . '</text>';
+        $b .= self::gpu_card(300, 236, 156, 64, $c, 2);
+        return [480, 360, $b . self::sparkles($c, [[420, 80, 10]]), 'meet'];
+    }
+
+    /** Website builder with an AI content helper. */
+    private static function draw_ai_cms($w, $h, $o, $c) {
+        $b = self::backdrop($c);
+        $inner = '<rect x="96" y="108" width="190" height="96" rx="14" fill="' . $c['primary-container'] . '"/>'
+            . '<path d="M112 186l40-40 30 30 22-22 46 32z" fill="' . $c['primary'] . '" opacity=".75"/><circle cx="252" cy="134" r="12" fill="#FFFFFF"/>'
+            . '<rect x="96" y="216" width="190" height="12" rx="6" fill="' . $c['on-surface'] . '" opacity=".8"/>'
+            . '<rect x="96" y="236" width="150" height="10" rx="5" fill="' . $c['outline-variant'] . '"/>'
+            . '<rect x="300" y="108" width="88" height="96" rx="14" fill="' . $c['primary-container-low'] . '" stroke="' . $c['primary-fixed-dim'] . '" stroke-width="2"/>' . self::star4(344, 138, 16, $c['primary'])
+            . '<rect x="314" y="166" width="60" height="8" rx="4" fill="' . $c['outline-variant'] . '"/><rect x="314" y="182" width="44" height="8" rx="4" fill="' . $c['outline-variant'] . '"/>';
+        $b .= self::browser(70, 60, 340, 220, $c, $inner);
+        $b .= '<g transform="translate(336 222)"><rect width="96" height="96" rx="28" fill="' . $c['primary'] . '"/>' . self::star4(46, 50, 26, $c['on-primary']) . self::star4(72, 24, 9, $c['on-primary']) . '</g>';
+        return [480, 360, $b . self::sparkles($c, [[48, 92, 10]]), 'meet'];
+    }
+
+    /** Globe with a connected AI network (domains stay visible). */
+    private static function draw_ai_globe($w, $h, $o, $c) {
+        [$vw, $vh, $b, $mode] = self::draw_globe($w, $h, $o, $c);
+        $top = !empty($o['top_space']);
+        $cy = $top ? 400 : 180; $r = $top ? 92 : 112;
+        $pts = [[-.5, -.35], [.15, -.62], [.6, -.05], [.05, .5], [-.62, .3], [-.05, -.02]];
+        $xy = array_map(static function ($p) use ($cy, $r) { return [round(240 + $r * $p[0], 1), round($cy + $r * $p[1], 1)]; }, $pts);
+        $net = '';
+        foreach ([[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [5, 0], [5, 2], [5, 3]] as [$a, $z]) $net .= '<path d="M' . $xy[$a][0] . ' ' . $xy[$a][1] . 'L' . $xy[$z][0] . ' ' . $xy[$z][1] . '" stroke="' . $c['primary'] . '" stroke-width="2.5" opacity=".8"/>';
+        foreach ($xy as $i => [$x, $y]) $net .= '<circle cx="' . $x . '" cy="' . $y . '" r="' . ($i === 5 ? 10 : 7) . '" fill="' . $c['primary'] . '" stroke="#FFFFFF" stroke-width="3"/>';
+        return [$vw, $vh, $b . $net, $mode];
+    }
+
     /* ---- decorative ---- */
 
     private static function draw_shape($w, $h, $o, $c) {
@@ -357,11 +596,10 @@ final class Rackmonk_Vectors {
             'disk'   => '<rect x="16" y="17" width="20" height="18" rx="4" fill="none" stroke="' . $c['on-primary'] . '" stroke-width="3"/><path d="M20 23h12M20 29h8" stroke="' . $c['on-primary'] . '" stroke-width="3" stroke-linecap="round"/>',
             'cloud'  => '<path d="M19 34h15a6 6 0 0 0 1-12 9 9 0 0 0-17 2 5 5 0 0 0 1 10z" fill="' . $c['on-primary'] . '"/>',
         ];
-        $width = 64 + strlen($o['text'] ?? '') * 9.4;
-        $b = '<rect x="1" y="1" width="' . ($width - 2) . '" height="50" rx="25" fill="#FFFFFF" stroke="' . $c['outline-variant'] . '" stroke-width="2"/>';
-        $b .= '<circle cx="26" cy="26" r="17" fill="' . $c['primary'] . '"/>' . ($paths[$icon] ?? $paths['check']);
-        $b .= '<text x="52" y="32" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="700" fill="' . $c['on-surface'] . '">' . $text . '</text>';
-        return [(int) ceil($width), 52, $b, 'meet'];
+        $b = '<rect x=".75" y=".75" width="278.5" height="78.5" rx="16" fill="' . $c['surface-container-lowest'] . '" stroke="' . $c['outline-variant'] . '" stroke-width="1.5"/>';
+        $b .= '<g transform="translate(16 14)"><rect x="2" y="2" width="48" height="48" rx="14" fill="' . $c['primary'] . '"/>' . ($paths[$icon] ?? $paths['check']) . '</g>';
+        $b .= '<text x="82" y="46" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="600" fill="' . $c['on-surface'] . '">' . $text . '</text>';
+        return [280, 80, $b, 'meet'];
     }
 
     private static function draw_payments($w, $h, $o, $c) {
@@ -405,6 +643,14 @@ final class Rackmonk_Vectors {
         } else {
             $b .= '<circle cx="' . ($vw * .86) . '" cy="' . ($vh * .25) . '" r="' . ($vh * .3) . '" fill="none" stroke="' . $c['primary'] . '" stroke-opacity=".25" stroke-width="2"/>';
             $b .= '<circle cx="' . ($vw * .86) . '" cy="' . ($vh * .25) . '" r="' . ($vh * .18) . '" fill="' . $c['primary'] . '" fill-opacity=".08"/>';
+            // faint AI network inside the ring
+            $cx = $vw * .86; $cy = $vh * .25; $rr = $vh * .26;
+            $pts = [[-.8, -.3], [-.35, -.75], [.3, -.6], [.75, .1], [.25, .65], [-.45, .5], [0, 0]];
+            $xy = array_map(static function ($p) use ($cx, $cy, $rr) { return [round($cx + $rr * $p[0], 1), round($cy + $rr * $p[1], 1)]; }, $pts);
+            $net = '';
+            foreach ([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [6, 0], [6, 2], [6, 4]] as [$a, $z]) $net .= 'M' . $xy[$a][0] . ' ' . $xy[$a][1] . 'L' . $xy[$z][0] . ' ' . $xy[$z][1];
+            $b .= '<path d="' . $net . '" stroke="' . $c['primary'] . '" stroke-opacity=".28" stroke-width="2" fill="none"/>';
+            foreach ($xy as $i => [$x, $y]) $b .= '<circle cx="' . $x . '" cy="' . $y . '" r="' . round(max(4, $vh * ($i === 6 ? .016 : .01)), 1) . '" fill="' . $c['primary'] . '" fill-opacity=".4"/>';
         }
         return [$vw, $vh, $b, 'slice'];
     }

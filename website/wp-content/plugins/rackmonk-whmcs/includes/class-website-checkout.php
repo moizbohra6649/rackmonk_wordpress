@@ -25,6 +25,9 @@ class Rackmonk_Website_Checkout {
         add_action('wc_ajax_rackmonk_checkout', [$this, 'prepare_checkout']);
         add_action('woocommerce_before_calculate_totals', [$this, 'refresh_prices']);
         add_action('woocommerce_check_cart_items', [$this, 'validate_cart']);
+        add_filter('woocommerce_currency', [$this, 'cart_currency']);
+        add_filter('woocommerce_add_to_cart_validation', [$this, 'validate_addition'], 10, 6);
+        add_action('woocommerce_checkout_create_order', [$this, 'order_currency'], 10, 2);
         add_filter('woocommerce_get_item_data', [$this, 'item_data'], 10, 2);
         add_action('woocommerce_checkout_create_order_line_item', [$this, 'order_item'], 10, 4);
         add_action('wp_enqueue_scripts', [$this, 'assets']);
@@ -59,10 +62,48 @@ class Rackmonk_Website_Checkout {
             throw new InvalidArgumentException('Choose a valid hosting plan.');
         }
         $quote = Rackmonk_Website_Cart::price_config(Rackmonk_Website_Cart::runtime_config($item['pid']), $item['months'] ?? null, $item['choices'] ?? null, $item['revision'] ?? null);
-        if ($quote['currency'] !== get_woocommerce_currency()) {
+        if (!class_exists('Rackmonk_Currency') && $quote['currency'] !== get_woocommerce_currency()) {
             throw new InvalidArgumentException('This plan currency does not match the store currency. Please contact support.');
         }
         return $quote;
+    }
+
+    public function cart_currency($currency) {
+        if (!function_exists('WC') || !WC() || !WC()->cart || (function_exists('is_admin') && is_admin() && !wp_doing_ajax())) return $currency;
+        // Existing orders use their persisted currency, never the visitor's current selection.
+        if (function_exists('is_wc_endpoint_url') && (is_wc_endpoint_url('order-pay') || is_wc_endpoint_url('order-received'))) return $currency;
+        $codes = [];
+        foreach (WC()->cart->cart_contents as $item) {
+            if (empty($item['rackmonk_configuration']['currency'])) return $currency;
+            $codes[] = $item['rackmonk_configuration']['currency'];
+        }
+        return $codes && count(array_unique($codes)) === 1 && preg_match('/^[A-Z]{3}$/D', $codes[0]) ? $codes[0] : $currency;
+    }
+
+    public function validate_addition($valid, $product_id, $quantity, $variation_id = 0, $variations = [], $data = []) {
+        if (!$valid || !WC()->cart) return $valid;
+        $hosting = isset($data['rackmonk_configuration']);
+        foreach (WC()->cart->get_cart() as $item) {
+            if ($hosting !== isset($item['rackmonk_configuration'])) {
+                wc_add_notice('Hosting plans must be purchased separately from other products to keep billing currencies correct.', 'error');
+                return false;
+            }
+        }
+        return $valid;
+    }
+
+    public function order_currency($order, $data) {
+        $currency = null;
+        $other = false;
+        foreach (WC()->cart->get_cart() as $item) {
+            if (empty($item['rackmonk_configuration'])) { $other = true; continue; }
+            $quote = self::price_item($item['rackmonk_configuration']);
+            if ($currency !== null && $currency !== $quote['currency']) throw new RuntimeException('Hosting currencies changed. Review your cart before checkout.');
+            $currency = $quote['currency'];
+        }
+        if ($currency === null) return;
+        if ($other) throw new RuntimeException('Purchase hosting separately from other products.');
+        $order->set_currency($currency);
     }
 
     private static function product($quote) {
@@ -102,6 +143,10 @@ class Rackmonk_Website_Checkout {
                 if (!hash_equals($target['token'], $token)) throw new RuntimeException('This cart item changed in another tab. Reopen it from your cart before saving.');
             }
             // Validate the complete request before touching the customer's existing cart.
+            if (!WC()->cart) wc_load_cart();
+            foreach (WC()->cart->get_cart() as $existing) {
+                if (!isset($existing['rackmonk_configuration'])) throw new InvalidArgumentException('Purchase or remove other products before adding hosting plans. Your cart was preserved.');
+            }
             $prepared = [];
             foreach ($items as $item) {
                 $quote = self::price_item($item);
@@ -148,24 +193,40 @@ class Rackmonk_Website_Checkout {
                 $cart->cart_contents[$key]['data'] = $product;
             } catch (InvalidArgumentException | RuntimeException $error) {
                 // Checkout validation blocks stale configurations instead of silently repricing them.
+                $saved = $item['rackmonk_configuration']['total'] ?? null;
+                if (is_numeric($saved) && is_finite((float) $saved) && (float) $saved >= 0) {
+                    $product = clone $item['data'];
+                    $product->set_price($saved);
+                    $cart->cart_contents[$key]['data'] = $product;
+                }
             }
         }
     }
 
     public function validate_cart() {
+        $hosting = false;
+        $other = false;
+        $currencies = [];
         foreach (WC()->cart->get_cart() as $item) {
             if (!isset($item['rackmonk_configuration'])) {
+                $other = true;
                 if (!empty($item['data']) && $item['data']->get_meta('_rackmonk_hosting')) {
                     wc_add_notice('Configure your hosting plan before purchasing it.', 'error');
                 }
                 continue;
             }
+            $hosting = true;
+            $currencies[] = $item['rackmonk_configuration']['currency'] ?? '';
             try {
                 self::price_item($item['rackmonk_configuration']);
             } catch (InvalidArgumentException | RuntimeException $error) {
                 $message = 'Hosting plan needs review: ' . $error->getMessage() . ' Remove it and configure it again.';
                 if (!wc_has_notice($message, 'error')) wc_add_notice($message, 'error');
             }
+        }
+        if (($hosting && $other) || count(array_unique($currencies)) > 1) {
+            $message = 'Purchase hosting separately and review all hosting plans in the same currency before checkout.';
+            if (!wc_has_notice($message, 'error')) wc_add_notice($message, 'error');
         }
     }
 
@@ -181,6 +242,7 @@ class Rackmonk_Website_Checkout {
     public function order_item($line, $key, $values, $order) {
         if (empty($values['rackmonk_configuration'])) return;
         $quote = self::price_item($values['rackmonk_configuration']);
+        if ($order && $order->get_currency() !== $quote['currency']) throw new RuntimeException('Order currency does not match the reviewed hosting price.');
         $line->add_meta_data('_rackmonk_configuration', $quote, true);
         foreach ($this->item_data([], $values) as $field) $line->add_meta_data($field['key'], $field['value']);
     }

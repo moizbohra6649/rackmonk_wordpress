@@ -92,7 +92,15 @@ class xHosting_Pricing extends Widget_Base {
 				]
 			]
 		);
-        
+		$this->add_control(
+			'rackmonk_source_note',
+			[
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => wp_kses_post( 'When WHMCS plans exist, the live site shows them here instead of the items below. Edit plan names, taglines and features in <strong>WP Admin &gt; Website Content &gt; Plan Content</strong>, prices in <strong>WHMCS Plans</strong>, and the tab labels, badge, button and “/mo” text in <strong>Website Content &gt; Pricing content</strong>.' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+			]
+		);
+
         $this->end_controls_section();
 
 		$this->start_controls_section(
@@ -659,9 +667,20 @@ class xHosting_Pricing extends Widget_Base {
 
 			$dynamic_items = \Rackmonk_Plans_Manager::get_instance()->get_elementor_pricing_items( $gid );
 			if ( ! empty( $dynamic_items ) ) {
+				// Labels are editable in WP Admin > Website Content > Pricing content (defaults = previous fixed text).
+				$rm_text = static function ( $key, $default ) {
+					return class_exists( '\Rackmonk_Site_Content' ) ? \Rackmonk_Site_Content::text( $key, $default ) : $default;
+				};
+				foreach ( $dynamic_items as &$rm_item ) {
+					$rm_item['populer_badge'] = $rm_text( 'pricing_cards_badge', $rm_item['populer_badge'] );
+					$rm_item['btn_label']     = $rm_text( 'pricing_cards_button', $rm_item['btn_label'] );
+					$rm_item['m_period']      = $rm_text( 'pricing_cards_period_48', $rm_item['m_period'] );
+					$rm_item['y_period']      = $rm_text( 'pricing_cards_period_12', $rm_item['y_period'] );
+				}
+				unset( $rm_item );
 				$settings["pricings"] = $dynamic_items;
-				$settings["m_label"]  = "48 Months (Save up to 70%)";
-				$settings["y_label"]  = "12 Months (Save 50%)";
+				$settings["m_label"]  = $rm_text( 'pricing_cards_tab_48', '48 Months (Save up to 70%)' );
+				$settings["y_label"]  = $rm_text( 'pricing_cards_tab_12', '12 Months (Save 50%)' );
 			}
 		}
 		extract( $settings );

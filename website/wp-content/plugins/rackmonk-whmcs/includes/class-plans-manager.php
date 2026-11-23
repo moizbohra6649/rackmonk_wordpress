@@ -50,17 +50,23 @@ class Rackmonk_Plans_Manager {
 
     /** Lowest available website-cart rate, including required native options. */
     public function get_lowest_inr_cart_rate() {
+        return $this->get_lowest_cart_rate('INR');
+    }
+
+    public function get_lowest_cart_rate($code = null, $product_ids = null, $term = 48) {
+        $code = $code ?: (class_exists('Rackmonk_Currency') ? Rackmonk_Currency::current()['code'] : 'INR');
         $settings = get_option(Rackmonk_Website_Cart::OPTION, []);
         if (!is_array($settings)) return null;
         $best = null;
         foreach ($settings as $pid => $setting) {
+            if ($product_ids !== null && !in_array((int) $pid, $product_ids, true)) continue;
             if (empty($setting['enabled'])) continue;
             try {
                 $plan = Rackmonk_Website_Cart::runtime_config((int) $pid);
             } catch (Throwable $error) {
                 continue;
             }
-            if (!$plan || $plan['currency'] !== 'INR') continue;
+            if (!$plan || $plan['currency'] !== $code) continue;
             $rates = [];
             foreach ([1, 48] as $months) {
                 $base = $plan['prices'][$months] ?? null;
@@ -83,7 +89,7 @@ class Rackmonk_Plans_Manager {
                 $rates[$months] = ['cents' => $cents, 'setup' => $setup];
             }
             foreach ($rates as $months => $rate) {
-                if ($months !== 48) continue;
+                if ($months !== $term) continue;
                 if ($best !== null && $rate['cents'] * $best['months'] >= $best['cents'] * $months) continue;
                 $best = ['cents' => $rate['cents'], 'months' => $months, 'setup' => $rate['setup'], 'monthly' => $rates[1]['cents'] ?? null];
             }
@@ -199,7 +205,9 @@ class Rackmonk_Plans_Manager {
                 $stmt->execute($params);
                 $rows = $stmt->fetchAll();
 
+                $display = class_exists('Rackmonk_Currency') ? Rackmonk_Currency::current() : null;
                 foreach ($rows as $r) {
+                    if ($display && (int) $display['id'] !== $curr_id) $r = $this->localize_row($r, $pdo, $display);
                     $plans[] = $this->format_product($r);
                 }
             } catch (Exception $e) {
@@ -212,6 +220,32 @@ class Rackmonk_Plans_Manager {
         }
 
         return $plans;
+    }
+
+    /**
+     * Re-price a default-currency product row in the visitor's currency: the product's own WHMCS prices in that
+     * currency when they are set, otherwise the default prices converted with the WHMCS exchange rate.
+     */
+    private function localize_row(array $row, $pdo, array $display) {
+        $cols = ['msetupfee', 'monthly', 'quarterly', 'semiannually', 'annually', 'biennially', 'triennially', 'quadsetupfee', 'quadrennially'];
+        $own = null;
+        try {
+            $stmt = $pdo->prepare('SELECT ' . implode(', ', $cols) . " FROM tblpricing WHERE type = 'product' AND relid = ? AND currency = ? LIMIT 1");
+            $stmt->execute([(int) ($row['id'] ?? 0), (int) $display['id']]);
+            $own = $stmt->fetch() ?: null;
+        } catch (Throwable $error) {
+            error_log('WHMCS currency pricing: ' . $error->getMessage());
+        }
+        $has_own = $own !== null;
+        foreach ($cols as $col) {
+            if ($has_own) { $row[$col] = $own[$col]; continue; }
+            $value = (float) ($row[$col] ?? 0);
+            if ($value > 0) $row[$col] = Rackmonk_Currency::convert($value, $display);
+        }
+        $row['currency_code'] = $display['code'];
+        $row['currency_prefix'] = $display['prefix'];
+        $row['currency_suffix'] = $display['suffix'];
+        return $row;
     }
 
     /** Native 48-month base package only; never substitute a recurring billing cycle. */
@@ -243,6 +277,8 @@ class Rackmonk_Plans_Manager {
     /** Format source product pricing and its separately mapped one-time package. */
     public function format_product($row) {
         $currency_symbol = !empty($row['currency_prefix']) ? $row['currency_prefix'] : '₹';
+        $money = class_exists('Rackmonk_Currency') ? (Rackmonk_Currency::get($row['currency_code'] ?? '') ?: Rackmonk_Currency::default_currency()) : null;
+        $num = static function ($amount) use ($money) { return $money ? Rackmonk_Currency::number($amount, $money) : number_format($amount, 0); };
 
         // Base regular monthly price
         $monthly_regular = floatval($row['monthly'] ?? 0);
@@ -342,7 +378,7 @@ class Rackmonk_Plans_Manager {
         $cart_base = Rackmonk_Website_Cart::get_cart_url($pid);
         $is_configurable = Rackmonk_Website_Cart::enabled($pid);
 
-        return [
+        $plan = [
             'id'            => $pid,
             'is_configurable' => $is_configurable,
             'gid'           => intval($row['gid'] ?? 1),
@@ -352,6 +388,7 @@ class Rackmonk_Plans_Manager {
             'is_popular'    => $is_popular,
             'popular_badge' => 'Most Popular',
             'currency'      => $currency_symbol,
+            'currency_code' => $money ? $money['code'] : ($row['currency_code'] ?? 'INR'),
             'regular_price' => $monthly_regular,
             'features'      => $features,
             'default_cycle' => '48',
@@ -367,7 +404,7 @@ class Rackmonk_Plans_Manager {
                     'regular_price'   => $monthly_regular,
                     'discount_pct'    => $discount_48m,
                     'discount_text'   => $discount_48m > 0 ? ('SAVE ' . $discount_48m . '%') : '',
-                    'billing_note'    => 'Billed ' . $currency_symbol . number_format($total_48m, 0) . ' for 48 months',
+                    'billing_note'    => 'Billed ' . $currency_symbol . $num($total_48m) . ' for 48 months',
                     'whmcs_cycle'     => 'quadrennially',
                 ],
                 '36' => [
@@ -381,7 +418,7 @@ class Rackmonk_Plans_Manager {
                     'regular_price'   => $monthly_regular,
                     'discount_pct'    => $discount_36m,
                     'discount_text'   => $discount_36m > 0 ? ('SAVE ' . $discount_36m . '%') : '',
-                    'billing_note'    => 'Billed ' . $currency_symbol . number_format($total_36m, 0) . ' for 36 months',
+                    'billing_note'    => 'Billed ' . $currency_symbol . $num($total_36m) . ' for 36 months',
                     'whmcs_cycle'     => 'triennially',
                 ],
                 '24' => [
@@ -392,7 +429,7 @@ class Rackmonk_Plans_Manager {
                     'regular_price'   => $monthly_regular,
                     'discount_pct'    => $discount_24m,
                     'discount_text'   => $discount_24m > 0 ? ('SAVE ' . $discount_24m . '%') : '',
-                    'billing_note'    => 'Billed ' . $currency_symbol . number_format($total_24m, 0) . ' for 24 months',
+                    'billing_note'    => 'Billed ' . $currency_symbol . $num($total_24m) . ' for 24 months',
                     'whmcs_cycle'     => 'biennially',
                     'order_url'       => add_query_arg('term', 24, $cart_base),
                 ],
@@ -404,7 +441,7 @@ class Rackmonk_Plans_Manager {
                     'regular_price'   => $monthly_regular,
                     'discount_pct'    => $discount_12m,
                     'discount_text'   => $discount_12m > 0 ? ('SAVE ' . $discount_12m . '%') : '',
-                    'billing_note'    => 'Billed ' . $currency_symbol . number_format($total_12m, 0) . ' for 12 months',
+                    'billing_note'    => 'Billed ' . $currency_symbol . $num($total_12m) . ' for 12 months',
                     'whmcs_cycle'     => 'annually',
                     'order_url'       => add_query_arg('term', 12, $cart_base),
                 ],
@@ -423,6 +460,42 @@ class Rackmonk_Plans_Manager {
             ],
             'order_url' => add_query_arg('term', 48, $cart_base),
         ];
+        // Use the same configured amounts as the server-side cart, including manual terms.
+        if ($is_configurable && method_exists('Rackmonk_Website_Cart', 'runtime_config')) {
+            try {
+                $config = Rackmonk_Website_Cart::runtime_config($pid);
+                if (!$config || $config['currency'] !== $plan['currency_code']) throw new RuntimeException('Currency pricing unavailable.');
+                foreach ($plan['cycles'] as $term => &$cycle) {
+                    $amount = $config['prices'][$term] ?? null;
+                    $cycle['available'] = $amount !== null;
+                    $cycle['total_price'] = $amount ? (float) $amount['recurring'] : 0.0;
+                    $cycle['setup_fee'] = $amount ? (float) $amount['setup'] : 0.0;
+                    $cycle['price_per_month'] = $cycle['total_price'] / (int) $term;
+                    $cycle['regular_price'] = (float) ($config['prices'][1]['recurring'] ?? 0);
+                    $cycle['discount_pct'] = $cycle['regular_price'] > 0 ? max(0, round((1 - $cycle['price_per_month'] / $cycle['regular_price']) * 100)) : 0;
+                    $cycle['discount_text'] = $cycle['discount_pct'] > 0 ? 'SAVE ' . $cycle['discount_pct'] . '%' : '';
+                    $cycle['billing_note'] = $amount ? 'Billed ' . $currency_symbol . $num($cycle['total_price']) . ' for ' . $term . ' months' : 'Unavailable';
+                    if (!$amount) $cycle['order_url'] = '';
+                }
+                unset($cycle);
+            } catch (RuntimeException $error) {
+                foreach ($plan['cycles'] as &$cycle) { $cycle['available'] = false; $cycle['order_url'] = ''; }
+                unset($cycle);
+            }
+        }
+        foreach ($plan['cycles'] as &$cycle) {
+            $cycle['display_price'] = $num($cycle['price_per_month']);
+            $cycle['display_regular'] = $num($cycle['regular_price']);
+        }
+        unset($cycle);
+        $plan['order_url'] = $plan['cycles']['48']['order_url'];
+        return $plan;
+    }
+
+    public function money_number($amount, $plan) {
+        return class_exists('Rackmonk_Currency')
+            ? Rackmonk_Currency::number($amount, Rackmonk_Currency::get($plan['currency_code'] ?? '') ?: Rackmonk_Currency::default_currency())
+            : number_format($amount, 0);
     }
 
     /**
@@ -455,9 +528,9 @@ class Rackmonk_Plans_Manager {
                 'populer_badge' => 'Most Popular',
                 'title'         => $p['name'],
                 'text'          => $p['tagline'] ?? 'High performance hosting architecture',
-                'm_price'       => !empty($p48['available']) ? $p['currency'] . number_format($p48['price_per_month'], 0) : 'Unavailable',
+                'm_price'       => !empty($p48['available']) ? $p['currency'] . $this->money_number($p48['price_per_month'], $p) : 'Unavailable',
                 'm_period'      => '/mo',
-                'y_price'       => $p['currency'] . number_format($p12['price_per_month'], 0),
+                'y_price'       => !empty($p12['available']) ? $p['currency'] . $this->money_number($p12['price_per_month'], $p) : 'Unavailable',
                 'y_period'      => '/mo (12M)',
                 'p_text'        => $p48['billing_note'],
                 'd_text'        => $p48['discount_text'],

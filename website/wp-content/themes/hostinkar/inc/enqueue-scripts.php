@@ -74,7 +74,8 @@ function xhosting_scripts() {
         list( $deps, $src, $in_footer ) = $args;
 
         if ( $src ) {
-            wp_enqueue_script( $handle, $src, $deps, null, $in_footer );
+            $version = $handle === 'xhosting-main' ? filemtime( get_template_directory() . '/assets/js/main.js' ) : null;
+            wp_enqueue_script( $handle, $src, $deps, $version, $in_footer );
         } else {
             wp_enqueue_script( $handle ); // assumes it's a core script like 'jquery-masonry'
         }

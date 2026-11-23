@@ -18,6 +18,8 @@ define('RACKMONK_WHMCS_URL', plugin_dir_url(__FILE__));
 define('RACKMONK_WHMCS_VERSION', '1.0.0');
 
 require_once RACKMONK_WHMCS_DIR . 'includes/class-plans-manager.php';
+require_once RACKMONK_WHMCS_DIR . 'includes/class-currency.php';
+Rackmonk_Currency::boot();
 require_once RACKMONK_WHMCS_DIR . 'includes/class-site-content.php';
 new Rackmonk_Site_Content();
 require_once RACKMONK_WHMCS_DIR . 'includes/class-website-cart.php';
@@ -76,7 +78,8 @@ add_action('wp_enqueue_scripts', function() {
     wp_localize_script('rackmonk-pricing-script', 'rackmonkData', [
         'ajaxurl'   => admin_url('admin-ajax.php'),
         'apiUrl'    => rest_url('rackmonk/v1/plans'),
-        'currency'  => '₹',
+        'currency'  => Rackmonk_Currency::current()['prefix'],
+        'currencyCode' => Rackmonk_Currency::current()['code'],
         'cartUrl'   => Rackmonk_Website_Cart::get_cart_url(),
     ]);
 });

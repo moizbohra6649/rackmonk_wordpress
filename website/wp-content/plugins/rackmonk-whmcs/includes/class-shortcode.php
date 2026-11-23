@@ -39,8 +39,6 @@ class Rackmonk_Pricing_Shortcode {
         }
 
         $plans = $manager->get_plans($gid);
-        $curr = $manager->get_default_currency();
-        $curr_symbol = $curr['prefix'] ?? '₹';
         $copy = static function ($key, $default) {
             return esc_html(class_exists('Rackmonk_Site_Content') ? Rackmonk_Site_Content::text($key, $default) : $default);
         };
@@ -109,12 +107,12 @@ class Rackmonk_Pricing_Shortcode {
 
                     <div class="rackmonk-plan-price-wrap">
                         <div class="rackmonk-price-regular">
-                            <span class="currency"><?php echo esc_html($plan['currency']); ?></span><del class="reg-price-val"><?php echo number_format($currCycle['regular_price'], 0); ?></del>
+                            <span class="currency"><?php echo esc_html($plan['currency']); ?></span><del class="reg-price-val"><?php echo esc_html($manager->money_number($currCycle['regular_price'], $plan)); ?></del>
                             <span class="discount-badge discount-val" style="<?php echo empty($currCycle['discount_text']) ? 'display:none;' : ''; ?>"><?php echo esc_html($currCycle['discount_text']); ?></span>
                         </div>
                         <div class="rackmonk-price-main">
                             <span class="currency"><?php echo esc_html($plan['currency']); ?></span>
-                            <span class="price-val"><?php echo isset($currCycle['available']) && !$currCycle['available'] ? $copy('pricing_unavailable', 'Unavailable') : number_format($currCycle['price_per_month'], 0); ?></span>
+                            <span class="price-val"><?php echo isset($currCycle['available']) && !$currCycle['available'] ? $copy('pricing_unavailable', 'Unavailable') : esc_html($manager->money_number($currCycle['price_per_month'], $plan)); ?></span>
                             <span class="period">/mo</span>
                         </div>
                         <div class="rackmonk-billing-note note-val">

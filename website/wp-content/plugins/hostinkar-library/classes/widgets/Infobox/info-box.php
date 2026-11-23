@@ -94,7 +94,8 @@ class Xhosting_Info_Box extends Widget_Base {
 					'7'  => esc_html__( 'Style 7', 'xhosting-plugin' ),
 					'8'  => esc_html__( 'Style 8', 'xhosting-plugin' ),
 					'9'  => esc_html__( 'Style 9', 'xhosting-plugin' ),
-					'10'  => esc_html__( 'Style 10', 'xhosting-plugin' )
+					'10'  => esc_html__( 'Style 10', 'xhosting-plugin' ),
+					'11'  => esc_html__( 'Migration Step', 'xhosting-plugin' )
 				]
 			]
 		);
@@ -105,6 +106,14 @@ class Xhosting_Info_Box extends Widget_Base {
 			[
 				'label' => esc_html__( 'Info Option', 'xhosting-plugin' ),
 				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+		$this->add_control(
+			'rackmonk_step_number', [
+				'label' => esc_html__( 'Step Number', 'xhosting-plugin' ),
+				'type' => Controls_Manager::TEXT,
+				'default' => '01',
+				'condition' => [ 'style' => '11' ],
 			]
 		);
 		$this->add_control(
@@ -158,7 +167,7 @@ class Xhosting_Info_Box extends Widget_Base {
                 'style_transfer' => true,
 				
                 'condition'      => [
-					'style!' => ['7', '9'],
+					'style!' => ['7', '9', '11'],
 				],
             ]
         );
@@ -170,7 +179,7 @@ class Xhosting_Info_Box extends Widget_Base {
                 'label_block' => true,
                 'condition'      => [
                     'type' => 'icon',
-					'style!' => ['7', '9'],
+					'style!' => ['7', '9', '11'],
                 ],
 			]
 		);
@@ -181,7 +190,7 @@ class Xhosting_Info_Box extends Widget_Base {
                 'label_block' => true,
                 'condition'      => [
                     'type' => 'image',
-					'style!' => ['7', '9'],
+					'style!' => ['7', '9', '11'],
                 ],
 			]
 		);

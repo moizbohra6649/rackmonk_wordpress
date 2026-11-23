@@ -11,6 +11,7 @@ final class Rackmonk_Client_Tools {
     const ICON_MAX = 128;           // Smaller images are icons/avatars and are not flagged.
     const SIZES_OPTION = 'rackmonk_display_sizes';
     const RASTER = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const EAGER_IMAGES = 5;         // Images at the top of a page (hero) that must not wait for lazy loading.
 
     public static function boot() {
         // HD output: keep full resolution and save resized copies at maximum quality.
@@ -20,6 +21,8 @@ final class Rackmonk_Client_Tools {
         add_filter('max_srcset_image_width', [__CLASS__, 'srcset_width']);
         add_action('elementor/frontend/widget/before_render', [__CLASS__, 'full_size_image_widget']);
         add_filter('elementor/widget/render_content', [__CLASS__, 'keep_display_size'], 30);
+        // Whole Elementor document (page, then footer) in page order, after cached widgets are filled in.
+        add_filter('elementor/frontend/the_content', [__CLASS__, 'lazy_images'], 40);
 
         // Media library tools.
         add_filter('manage_media_columns', [__CLASS__, 'media_column']);
@@ -31,6 +34,7 @@ final class Rackmonk_Client_Tools {
         // Admin navigation for the owner.
         add_action('admin_menu', [__CLASS__, 'admin_menu']);
         add_action('wp_dashboard_setup', [__CLASS__, 'dashboard_widget']);
+        add_action('admin_notices', [__CLASS__, 'template_notice']);
 
         // SEO description and social sharing tags.
         add_action('add_meta_boxes', [__CLASS__, 'seo_box']);
@@ -72,6 +76,29 @@ final class Rackmonk_Client_Tools {
             if ($key === '' || empty($sizes[$key])) return $tag;
             [$w, $h] = $sizes[$key];
             return preg_replace('/^<img\b/i', '<img width="' . (int) $w . '" height="' . (int) $h . '"', $tag);
+        }, $content);
+    }
+
+    /**
+     * Theme widgets print plain <img> tags with no loading hints. The first images on a page (the hero) load
+     * straight away, the first one with high priority; every later image waits until it is about to scroll into view.
+     */
+    public static function lazy_images($content) {
+        static $seen = 0;
+        // Only the visible page body counts (content rendered earlier, e.g. for the SEO description, is never shown).
+        if (is_admin() || !did_action('wp_body_open') || stripos($content, '<img') === false) return $content;
+        return preg_replace_callback('/<img\b[^>]*>/i', static function ($match) use (&$seen) {
+            $tag = $match[0];
+            $seen++;
+            // Images with width and height (e.g. the Elementor Image widget) are already optimised by Elementor/WordPress.
+            if (preg_match('/\sloading\s*=/i', $tag) || (preg_match('/\swidth\s*=/i', $tag) && preg_match('/\sheight\s*=/i', $tag))) return $tag;
+            if ($seen <= self::EAGER_IMAGES) {
+                $add = ($seen === 1 && !preg_match('/\sfetchpriority\s*=/i', $tag)) ? ' fetchpriority="high"' : '';
+            } else {
+                $add = ' loading="lazy"';
+            }
+            if (!preg_match('/\sdecoding\s*=/i', $tag)) $add .= ' decoding="async"';
+            return preg_replace('/^<img\b/i', '<img' . $add, $tag);
         }, $content);
     }
 
@@ -323,20 +350,57 @@ final class Rackmonk_Client_Tools {
         return admin_url('post.php?post=' . (int) $id . '&action=elementor');
     }
 
+    /**
+     * Site-wide Header/Footer template the theme really renders (Rackmonk Options, else the homepage's
+     * page setting), or 0 when none is valid and the theme falls back to its built-in header/footer.
+     */
+    private static function live_template($type) {
+        $style = function_exists('cs_get_option') ? cs_get_option($type . '_style') : '';
+        if (!$style) {
+            $meta = get_post_meta((int) get_option('page_on_front'), 'xhosting_page_meta', true);
+            if (is_array($meta) && !empty($meta['meta_' . $type . '_type'])) $style = $meta['meta_' . $type . '_style'] ?? '';
+        }
+        return ($style && get_post_type((int) $style) === 'xhosting_template') ? (int) $style : 0;
+    }
+
+    /** Explains on the Header & Footer screens which template is live, so edits are made in the right place. */
+    public static function template_notice() {
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+        if (!$screen || $screen->post_type !== 'xhosting_template' || !in_array($screen->base, ['edit', 'post'], true)) return;
+        $header = self::live_template('header');
+        $footer = self::live_template('footer');
+        $lines = [];
+        if ($header) {
+            $lines[] = 'Live header: <a href="' . esc_url(self::elementor_link($header)) . '"><strong>' . esc_html(get_the_title($header)) . '</strong></a> (edit with Elementor).';
+        } else {
+            $lines[] = '<strong>The website header is not made from the Header templates in this list</strong>, so editing them does not change the live site. Change the header logo in <a href="' . esc_url(admin_url('customize.php?autofocus[section]=title_tagline')) . '">Appearance &gt; Customize &gt; Site Identity</a>, its links, icons and drop-down descriptions in <a href="' . esc_url(admin_url('nav-menus.php')) . '">Appearance &gt; Menus</a>, and the Hosting drop-down headings in <a href="' . esc_url(admin_url('admin.php?page=rackmonk-site-content')) . '">Website Content &gt; Menu content</a>.';
+        }
+        if ($footer) {
+            $lines[] = 'Live footer: <a href="' . esc_url(self::elementor_link($footer)) . '"><strong>' . esc_html(get_the_title($footer)) . '</strong></a>. Edit it with Elementor to change footer text, links, logo, address and social icons. Other Footer templates are not shown on the website.';
+        }
+        echo '<div class="notice notice-info"><p>' . implode('</p><p>', $lines) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above.
+    }
+
     public static function dashboard_content() {
         $home = (int) get_option('page_on_front');
         $links = [];
         if ($home) $links[] = ['Home page', self::elementor_link($home), 'Edit text, images and sections visually with Elementor.'];
         $links[] = ['All pages', admin_url('edit.php?post_type=page'), 'Hover a page and click “Edit with Elementor”.'];
         $links[] = ['Blog posts', admin_url('edit.php'), 'Add or edit news and articles.'];
-        $links[] = ['Menu', admin_url('nav-menus.php'), 'Add, rename, reorder or hide menu links.'];
-        $links[] = ['Logo & site icon', admin_url('customize.php?autofocus[section]=title_tagline'), 'Change the logo, favicon, site name and tagline.'];
-        if (post_type_exists('xhosting_template')) $links[] = ['Header & Footer', admin_url('edit.php?post_type=xhosting_template'), 'Footer links, address, phone and social icons (edit with Elementor).'];
+        $links[] = ['Header menu', admin_url('nav-menus.php'), 'Add, rename, reorder or hide header links, and set drop-down icons and descriptions.'];
+        $links[] = ['Logo & site icon', admin_url('customize.php?autofocus[section]=title_tagline'), 'Change the header logo, favicon, site name and tagline.'];
+        if (post_type_exists('xhosting_template')) {
+            $footer = self::live_template('footer');
+            $links[] = $footer
+                ? ['Footer', self::elementor_link($footer), 'Footer text, links, logo, address, phone and social icons (opens “' . get_the_title($footer) . '” in Elementor).']
+                : ['Header & Footer', admin_url('edit.php?post_type=xhosting_template'), 'Footer links, address, phone and social icons (edit with Elementor).'];
+        }
         $kit = (int) get_option('elementor_active_kit');
         $links[] = ['Theme colour', admin_url('customize.php?autofocus[section]=rackmonk_theme_color'), 'Pick one colour — buttons, backgrounds, Elementor colours and all illustrations update automatically.'];
         if ($kit) $links[] = ['Fonts', admin_url('post.php?post=' . $kit . '&action=elementor'), 'In Elementor, open Site Settings → Global Fonts.'];
-        if (menu_page_url('rackmonk-site-content', false)) $links[] = ['Website Content', admin_url('admin.php?page=rackmonk-site-content'), 'About Us text, pricing labels, cart and account wording.'];
-        if (menu_page_url('rackmonk-plan-content', false)) $links[] = ['Hosting plans', admin_url('admin.php?page=rackmonk-plan-content'), 'Plan names, taglines and features.'];
+        if (menu_page_url('rackmonk-site-content', false)) $links[] = ['Website Content', admin_url('admin.php?page=rackmonk-site-content'), 'About Us page text, header drop-down headings, pricing labels and buttons, cart and account wording.'];
+        if (menu_page_url('rackmonk-plan-content', false)) $links[] = ['Hosting plans', admin_url('admin.php?page=rackmonk-plan-content'), 'Plan names, taglines and features shown in the pricing tables.'];
+        if (menu_page_url('rackmonk-hosting-cards', false)) $links[] = ['Homepage hosting cards', admin_url('admin.php?page=rackmonk-hosting-cards'), 'Title, text, button, icon image and colours of the hosting category cards.'];
         $links[] = ['Images', admin_url('upload.php?page=rackmonk-hd-images'), 'See which images are not HD and replace them in one click.'];
         echo '<ul style="margin:0">';
         foreach ($links as [$label, $url, $help]) {

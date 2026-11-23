@@ -30,8 +30,8 @@
                     if (!data) return;
 
                     // Update price display
-                    $card.find('.price-val').text(data.available === false ? ($container.attr('data-unavailable-label') ?? 'Unavailable') : numberWithCommas(Math.round(data.price_per_month)));
-                    $card.find('.reg-price-val').text(numberWithCommas(Math.round(data.regular_price)));
+                    $card.find('.price-val').text(data.available === false ? ($container.attr('data-unavailable-label') ?? 'Unavailable') : (data.display_price ?? numberWithCommas(Math.round(data.price_per_month))));
+                    $card.find('.reg-price-val').text(data.display_regular ?? numberWithCommas(Math.round(data.regular_price)));
                     
                     if (data.discount_text) {
                         $card.find('.discount-val').text(data.discount_text).show();

@@ -86,3 +86,13 @@ test('all Hostinkar styles sync initial native URL and repeated annual/default t
         }
     }
 });
+
+test('currency-aware server formatting retains cents when changing terms', () => {
+    const h = harness();
+    h.cycles['12'].display_price = '2.74';
+    h.cycles['12'].display_regular = '8.25';
+    h.card.attrs['data-cycles'] = JSON.stringify(h.cycles);
+    h.switchTerm('12');
+    assert.equal(h.card.children['.price-val'][0].text, '2.74');
+    assert.equal(h.card.children['.reg-price-val'][0].text, '8.25');
+});

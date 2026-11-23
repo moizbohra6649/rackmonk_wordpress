@@ -1,0 +1,1 @@
+2026-11-21T16:29:59+00:00 NOTICE Email "customer_new_account" for user #2 not sent: email type is disabled CONTEXT: {"email_type":"customer_new_account","status":"disabled","recipient":"moiz.bohra","user":2}
