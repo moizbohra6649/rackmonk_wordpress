@@ -376,7 +376,7 @@ final class Rackmonk_Client_Tools {
             $lines[] = '<strong>The website header is not made from the Header templates in this list</strong>, so editing them does not change the live site. Change the header logo in <a href="' . esc_url(admin_url('customize.php?autofocus[section]=title_tagline')) . '">Appearance &gt; Customize &gt; Site Identity</a>, its links, icons and drop-down descriptions in <a href="' . esc_url(admin_url('nav-menus.php')) . '">Appearance &gt; Menus</a>, and the Hosting drop-down headings in <a href="' . esc_url(admin_url('admin.php?page=rackmonk-site-content')) . '">Website Content &gt; Menu content</a>.';
         }
         if ($footer) {
-            $lines[] = 'Live footer: <a href="' . esc_url(self::elementor_link($footer)) . '"><strong>' . esc_html(get_the_title($footer)) . '</strong></a>. Edit it with Elementor to change footer text, links, logo, address and social icons. Other Footer templates are not shown on the website.';
+            $lines[] = 'Live footer: <a href="' . esc_url(self::elementor_link($footer)) . '"><strong>' . esc_html(get_the_title($footer)) . '</strong></a>. Change its text, links, logo, address, phone and social icons in <a href="' . esc_url(admin_url('admin.php?page=xhosting-theme-option#tab=footer-options')) . '">Rackmonk Options &gt; Footer Options</a> (kept in sync with this template), or edit the template with Elementor. Other Footer templates are not shown on the website.';
         }
         echo '<div class="notice notice-info"><p>' . implode('</p><p>', $lines) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above.
     }
@@ -392,7 +392,7 @@ final class Rackmonk_Client_Tools {
         if (post_type_exists('xhosting_template')) {
             $footer = self::live_template('footer');
             $links[] = $footer
-                ? ['Footer', self::elementor_link($footer), 'Footer text, links, logo, address, phone and social icons (opens “' . get_the_title($footer) . '” in Elementor).']
+                ? ['Footer', admin_url('admin.php?page=xhosting-theme-option#tab=footer-options'), 'Footer offer banner, logo, about text, social links, address, phone, email, link columns, copyright and policy links (Rackmonk Options › Footer Options).']
                 : ['Header & Footer', admin_url('edit.php?post_type=xhosting_template'), 'Footer links, address, phone and social icons (edit with Elementor).'];
         }
         $kit = (int) get_option('elementor_active_kit');
@@ -401,6 +401,7 @@ final class Rackmonk_Client_Tools {
         if (menu_page_url('rackmonk-site-content', false)) $links[] = ['Website Content', admin_url('admin.php?page=rackmonk-site-content'), 'About Us page text, header drop-down headings, pricing labels and buttons, cart and account wording.'];
         if (menu_page_url('rackmonk-plan-content', false)) $links[] = ['Hosting plans', admin_url('admin.php?page=rackmonk-plan-content'), 'Plan names, taglines and features shown in the pricing tables.'];
         if (menu_page_url('rackmonk-hosting-cards', false)) $links[] = ['Homepage hosting cards', admin_url('admin.php?page=rackmonk-hosting-cards'), 'Title, text, button, icon image and colours of the hosting category cards.'];
+        if (post_type_exists('rackmonk_review')) $links[] = ['Customer reviews & rating', admin_url('edit.php?post_type=rackmonk_review'), 'Approve reviews from customers and set the base rating. Every star rating on the website uses this one number.'];
         $links[] = ['Images', admin_url('upload.php?page=rackmonk-hd-images'), 'See which images are not HD and replace them in one click.'];
         echo '<ul style="margin:0">';
         foreach ($links as [$label, $url, $help]) {

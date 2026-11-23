@@ -177,6 +177,19 @@ add_filter('template_include', function ($template) {
 	return $template;
 }, 99);
 
+// Old page addresses → their new ones (WordPress only redirects renamed posts, not pages).
+add_action('template_redirect', function () {
+	if (!is_404()) return;
+	$moved = ['privacy-policy-2' => get_privacy_policy_url()];
+	$path = trim((string) wp_parse_url(add_query_arg([]), PHP_URL_PATH), '/');
+	$base = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
+	if ($base !== '' && strpos($path, $base . '/') === 0) $path = substr($path, strlen($base) + 1);
+	if (!empty($moved[$path])) {
+		wp_safe_redirect($moved[$path], 301);
+		exit;
+	}
+});
+
 add_action('wp_head', function () {
 	if (has_site_icon()) return;
 	$icon = esc_url(get_template_directory_uri() . '/assets/img/rackmonk-icon-dark.png');

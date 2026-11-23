@@ -18,7 +18,8 @@ class Rackmonk_Auth_Context {
         $route = isset($get['rest_route']) && is_string($get['rest_route']) ? $get['rest_route'] : '';
         if (strpos($relative, '/wp-json/') === 0) $route = substr($relative, strlen('/wp-json'));
         if ($route !== '') {
-            foreach (['/wp/v2', '/elementor/', '/elementor-pro/', '/wc/v1', '/wc/v2', '/wc/v3', '/wc-admin/', '/wc-analytics/'] as $prefix) if (strpos($route, $prefix) === 0) return true;
+            // '/elementor' covers every Elementor namespace (elementor, elementor-pro, elementor-one, elementor-mcp-composer...).
+            foreach (['/wp/v2', '/elementor', '/wp-site-health/', '/wc-site-health/', '/jetpack/', '/wc/v1', '/wc/v2', '/wc/v3', '/wc-admin/', '/wc-analytics/'] as $prefix) if (strpos($route, $prefix) === 0) return true;
             return false;
         }
         // Elementor's authenticated preview/editor must retain the native admin session.
@@ -37,5 +38,9 @@ if (!$rackmonk_admin_context) {
     foreach (['AUTH_COOKIE' => 'rackmonk_client_auth_', 'SECURE_AUTH_COOKIE' => 'rackmonk_client_secure_', 'LOGGED_IN_COOKIE' => 'rackmonk_client_logged_in_', 'USER_COOKIE' => 'rackmonk_client_user_', 'PASS_COOKIE' => 'rackmonk_client_pass_'] as $constant => $prefix) {
         if (!defined($constant)) define($constant, $prefix . COOKIEHASH);
     }
+    // WooCommerce's session cookie must be separate too. Shared, an admin request (e.g. the wp-admin heartbeat)
+    // rewrites it to the admin's ID, the storefront then starts a new guest session, and every "woocommerce-*"
+    // nonce on the page (sign-in, password reset) stops matching: "Your session expired".
+    add_filter('woocommerce_cookie', static function () { return 'rackmonk_client_wc_session_' . COOKIEHASH; });
 }
 unset($rackmonk_admin_context, $constant, $prefix);

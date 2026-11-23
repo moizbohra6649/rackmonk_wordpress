@@ -25,6 +25,7 @@ class Plugin {
         require_once XHOSTING_DIR . 'classes/class-elementor.php';
         require_once XHOSTING_DIR . 'classes/class-megamenu.php';
         require_once XHOSTING_DIR . 'inc/helper-functions.php';
+        require_once XHOSTING_DIR . 'inc/footer-content.php';
 
         // Post Types
         require_once XHOSTING_DIR . 'inc/post-type/template.php';

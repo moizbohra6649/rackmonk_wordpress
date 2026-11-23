@@ -74,26 +74,26 @@ class Rackmonk_WHMCS_Client_API {
         $process = null;
         $pipes = [];
         try {
-            if (!function_exists('proc_open')) throw new RuntimeException();
+            if (!function_exists('proc_open')) throw new RuntimeException('proc_open is disabled');
             $name = PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php';
             $candidates = PHP_SAPI === 'cli' ? [PHP_BINARY] : [PHP_BINDIR . DIRECTORY_SEPARATOR . $name, dirname(php_ini_loaded_file() ?: PHP_BINDIR . '/php.ini') . DIRECTORY_SEPARATOR . $name];
             $binary = '';
             foreach ($candidates as $candidate) if (is_file($candidate)) { $binary = $candidate; break; }
             $bridge = dirname(__DIR__) . '/bridge/whmcs-client-cli.php';
-            if (!is_file($binary) || !is_file($bridge)) throw new RuntimeException();
+            if (!is_file($binary) || !is_file($bridge)) throw new RuntimeException('php.exe or bridge file not found');
             $json = json_encode(['command' => $command, 'params' => $params], JSON_THROW_ON_ERROR);
-            if (strlen($json) > self::MAX_BYTES) throw new RuntimeException();
+            if (strlen($json) > self::MAX_BYTES) throw new RuntimeException('request too large');
             $process = proc_open([$binary, '-d', 'display_errors=0', '-d', 'log_errors=0', $bridge], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname($bridge), null, ['bypass_shell' => true, 'suppress_errors' => true]);
-            if (!is_resource($process)) throw new RuntimeException();
+            if (!is_resource($process)) throw new RuntimeException('could not start php.exe');
             foreach ($pipes as $pipe) stream_set_blocking($pipe, false);
             $deadline = microtime(true) + self::TIMEOUT;
             $written = 0;
             $exit = -1;
             while (true) {
-                if (microtime(true) >= $deadline) throw new RuntimeException();
+                if (microtime(true) >= $deadline) throw new RuntimeException('no answer within ' . self::TIMEOUT . ' seconds');
                 if (isset($pipes[0])) {
                     $count = fwrite($pipes[0], substr($json, $written, 8192));
-                    if ($count === false) throw new RuntimeException();
+                    if ($count === false) throw new RuntimeException('could not send the request');
                     $written += $count;
                     if ($written === strlen($json)) { fclose($pipes[0]); unset($pipes[0]); }
                 }
@@ -107,20 +107,22 @@ class Rackmonk_WHMCS_Client_API {
             // a noisy/stuck bootstrap is terminated at the same deadline.
             $output = stream_get_contents($pipes[1], self::MAX_BYTES + 1);
             $stderr = stream_get_contents($pipes[2], self::MAX_BYTES + 1);
-            if ($output === false || strlen($output) > self::MAX_BYTES || $stderr !== '') throw new RuntimeException();
+            if ($output === false || strlen($output) > self::MAX_BYTES || $stderr !== '') throw new RuntimeException('unexpected output' . ($stderr !== '' ? ': ' . substr(preg_replace('/\s+/', ' ', (string) $stderr), 0, 200) : ''));
             foreach ($pipes as $pipe) fclose($pipe);
             $pipes = [];
             $closed = proc_close($process);
             $process = null;
-            if (($exit >= 0 ? $exit : $closed) !== 0) throw new RuntimeException();
+            if (($exit >= 0 ? $exit : $closed) !== 0) throw new RuntimeException('bridge exit code ' . ($exit >= 0 ? $exit : $closed));
             $result = json_decode($output, true, 16, JSON_THROW_ON_ERROR);
             if (!is_array($result) || ($result['result'] ?? '') !== 'success') {
                 if ($command === 'AddClient' && ($result['kind'] ?? '') === 'validation') return self::error('whmcs_validation', ($result['field'] ?? '') === 'phone' ? 'Enter a valid phone number, including its country code.' : 'WHMCS rejected the registration details. Review the required fields or use the existing account sign-in.');
                 if ($command === 'ValidateLogin' && ($result['kind'] ?? '') === 'invalid_login') return self::error('whmcs_invalid_login', 'Incorrect email address or password.');
-                throw new RuntimeException();
+                throw new RuntimeException('WHMCS answered "' . (is_array($result) ? (string) ($result['kind'] ?? '') . ' ' . (string) ($result['detail'] ?? '') : 'not JSON') . '"');
             }
             return $result;
         } catch (Throwable $error) {
+            // Reason only (never passwords or emails), so a failed sign-in can be explained from the PHP error log.
+            error_log('Rackmonk WHMCS bridge: ' . $command . ' failed - ' . ($error->getMessage() !== '' ? $error->getMessage() : get_class($error)));
             return self::error('whmcs_transport', 'WHMCS could not confirm the request. Do not retry registration before checking its reference.');
         } finally {
             foreach ($pipes as $pipe) if (is_resource($pipe)) fclose($pipe);

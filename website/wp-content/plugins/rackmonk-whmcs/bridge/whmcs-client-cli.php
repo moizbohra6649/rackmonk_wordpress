@@ -72,7 +72,9 @@ try {
         if ($command === 'ValidateLogin' && trim($message) === 'Email or Password Invalid') {
             $emit(['result' => 'error', 'kind' => 'invalid_login']);
         } else {
-            $emit(['result' => 'error', 'kind' => $validation ? 'validation' : 'transport', 'field' => $validation && $phoneError ? 'phone' : '']);
+            // "detail" is WHMCS's own error text (letters/digits/punctuation only, never input values) for the PHP error log.
+            $detail = $validation ? '' : substr(trim(preg_replace('/[^A-Za-z0-9 .,:()\'_-]/', '', strtok($message, "\n") ?: '')), 0, 160);
+            $emit(['result' => 'error', 'kind' => $validation ? 'validation' : 'transport', 'field' => $validation && $phoneError ? 'phone' : '', 'detail' => $detail]);
         }
     } elseif ($command === 'ValidateLogin') {
         // Only the WHMCS user id and the 2FA flag leave the bridge; never the password hash.

@@ -169,7 +169,8 @@ class Rackmonk_Client_Area {
     }
 
     private static function terms_url() { $page = get_page_by_path('terms-conditions'); return $page ? get_permalink($page) : home_url('/'); }
-    private static function privacy_url() { $page = get_page_by_path('privacy-policy-2'); return $page ? get_permalink($page) : home_url('/'); }
+    // The page set in Settings → Privacy, so the link follows the page even if its address changes.
+    private static function privacy_url() { $url = get_privacy_policy_url(); if ($url) return $url; $page = get_page_by_path('privacy-policy'); return $page ? get_permalink($page) : home_url('/'); }
 
     private static function custom_field($field) {
         $id = (int) $field['id'];

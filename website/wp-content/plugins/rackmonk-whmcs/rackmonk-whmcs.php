@@ -38,6 +38,8 @@ require_once RACKMONK_WHMCS_DIR . 'includes/class-email-delivery.php';
 new Rackmonk_Email_Delivery();
 require_once RACKMONK_WHMCS_DIR . 'includes/class-navigation.php';
 new Rackmonk_Navigation();
+require_once RACKMONK_WHMCS_DIR . 'includes/class-reviews.php';
+Rackmonk_Reviews::boot();
 
 // Register Elementor Widget
 add_action('elementor/widgets/register', function($widgets_manager) {

@@ -4,7 +4,7 @@ $footer_copyright = cs_get_option('footer_copyright', __('© 2026 Rackmonk - Hig
 <footer class="default-footer cta__bg">
     <div class="container">
         <div class="footer__copyright-text text-center">
-            <?php echo wp_kses_post($footer_copyright); ?>
+            <?php echo wp_kses_post(do_shortcode($footer_copyright)); ?>
         </div>
     </div>
 </footer>

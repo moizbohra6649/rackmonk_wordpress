@@ -297,33 +297,109 @@ if (class_exists('CSF')) {
      ** Footer  Options
     --------------------------------------------------------*/
 
+    $rm_url_help = __('A page address like <code>/web-hosting/</code>, a full link (<code>https://…</code>), or <code>#</code> for no link.', 'xhosting-tools');
+    $rm_link_group = static function ($id, $title, $desc = '') use ($rm_url_help) {
+        return array(
+            'id' => $id,
+            'type' => 'group',
+            'title' => $title,
+            'subtitle' => $desc,
+            'button_title' => esc_html__('Add link', 'xhosting-tools'),
+            'fields' => array(
+                array('id' => 'label', 'type' => 'text', 'title' => esc_html__('Text', 'xhosting-tools')),
+                array('id' => 'url', 'type' => 'text', 'title' => esc_html__('Link', 'xhosting-tools'), 'desc' => $rm_url_help),
+            ),
+        );
+    };
+
+    $rm_footer_fields = array(
+        array(
+            'type' => 'notice',
+            'style' => 'info',
+            'content' => __('Everything below fills the live website footer. Saving here updates the footer template, and edits made to that template in Elementor show up here. The layout and design stay the same. Clear a field to hide it.', 'xhosting-tools'),
+        ),
+        array(
+            'id' => 'footer_style',
+            'type' => 'select',
+            'title' => __('Select Footer Style', 'xhosting-tools'),
+            'desc' => sprintf(
+                __('%sClick%s to create New Footer', 'xhosting-tools'),
+                '<a href="' . admin_url('edit.php?post_type=xhosting_template') . '" target="_blank">',
+                '</a>'
+            ),
+            'options' => Xhosting_Plugin_Helper::get_footer_types(),
+        ),
+
+        array('type' => 'subheading', 'content' => esc_html__('Offer banner (top of the footer)', 'xhosting-tools')),
+        array(
+            'id' => 'footer_cta_title',
+            'type' => 'text',
+            'title' => esc_html__('Offer text', 'xhosting-tools'),
+            'desc' => __('Wrap words in <code>&lt;span&gt;…&lt;/span&gt;</code> to highlight them, e.g. Get up to <code>&lt;span&gt;75%&lt;/span&gt;</code> off.', 'xhosting-tools'),
+        ),
+        array('id' => 'footer_cta_btn_label', 'type' => 'text', 'title' => esc_html__('Button text', 'xhosting-tools')),
+        array('id' => 'footer_cta_btn_link', 'type' => 'text', 'title' => esc_html__('Button link', 'xhosting-tools'), 'desc' => $rm_url_help),
+
+        array('type' => 'subheading', 'content' => esc_html__('Logo & about text', 'xhosting-tools')),
+        array('id' => 'footer_logo', 'type' => 'media', 'library' => 'image', 'title' => esc_html__('Footer logo', 'xhosting-tools'), 'desc' => esc_html__('Light logo for the dark footer.', 'xhosting-tools')),
+        array('id' => 'footer_about', 'type' => 'textarea', 'title' => esc_html__('About text', 'xhosting-tools')),
+
+        array('type' => 'subheading', 'content' => esc_html__('Social links', 'xhosting-tools')),
+        array('id' => 'footer_social_title', 'type' => 'text', 'title' => esc_html__('Heading', 'xhosting-tools')),
+    );
+    if (class_exists('Rackmonk_Footer_Content')) {
+        foreach (Rackmonk_Footer_Content::NETWORKS as $rm_key => $rm_network) {
+            $rm_footer_fields[] = array(
+                'id' => 'footer_social_' . $rm_key,
+                'type' => 'text',
+                'title' => $rm_network[0],
+                'placeholder' => 'https://',
+                'desc' => esc_html__('Profile link. Leave empty to hide this icon.', 'xhosting-tools'),
+            );
+        }
+    }
+    $rm_footer_fields = array_merge($rm_footer_fields, array(
+        array('type' => 'subheading', 'content' => esc_html__('Contact details', 'xhosting-tools')),
+        array('id' => 'footer_contact_title', 'type' => 'text', 'title' => esc_html__('Heading', 'xhosting-tools')),
+        array('id' => 'footer_address', 'type' => 'textarea', 'title' => esc_html__('Address', 'xhosting-tools'), 'desc' => esc_html__('Opens Google Maps when clicked.', 'xhosting-tools')),
+        array('id' => 'footer_phone', 'type' => 'text', 'title' => esc_html__('Phone', 'xhosting-tools'), 'desc' => esc_html__('Separate more than one number with a comma.', 'xhosting-tools')),
+        array('id' => 'footer_email', 'type' => 'text', 'title' => esc_html__('Email', 'xhosting-tools'), 'desc' => esc_html__('Separate more than one address with a comma.', 'xhosting-tools')),
+
+        array('type' => 'subheading', 'content' => esc_html__('Link columns', 'xhosting-tools')),
+        array('id' => 'footer_col1_show', 'type' => 'switcher', 'title' => esc_html__('Show column 1', 'xhosting-tools'), 'default' => true),
+        array('id' => 'footer_col1_title', 'type' => 'text', 'title' => esc_html__('Column 1 heading', 'xhosting-tools'), 'dependency' => array('footer_col1_show', '==', 'true')),
+        $rm_link_group('footer_col1_links', esc_html__('Column 1 links', 'xhosting-tools')) + array('dependency' => array('footer_col1_show', '==', 'true')),
+        array('id' => 'footer_col2_show', 'type' => 'switcher', 'title' => esc_html__('Show column 2', 'xhosting-tools'), 'desc' => esc_html__('Turn off to hide this column on the website. Its links are kept, so you can show it again any time.', 'xhosting-tools'), 'default' => true),
+        array('id' => 'footer_col2_title', 'type' => 'text', 'title' => esc_html__('Column 2 heading', 'xhosting-tools'), 'dependency' => array('footer_col2_show', '==', 'true')),
+        $rm_link_group('footer_col2_links', esc_html__('Column 2 links', 'xhosting-tools')) + array('dependency' => array('footer_col2_show', '==', 'true')),
+        array('id' => 'footer_col3_show', 'type' => 'switcher', 'title' => esc_html__('Show column 3', 'xhosting-tools'), 'default' => true),
+        array('id' => 'footer_col3_title', 'type' => 'text', 'title' => esc_html__('Column 3 heading', 'xhosting-tools'), 'dependency' => array('footer_col3_show', '==', 'true')),
+        $rm_link_group('footer_col3_links', esc_html__('Column 3 links', 'xhosting-tools')) + array('dependency' => array('footer_col3_show', '==', 'true')),
+
+        array('type' => 'subheading', 'content' => esc_html__('Payment & support bar', 'xhosting-tools')),
+        array('id' => 'footer_payment_title', 'type' => 'text', 'title' => esc_html__('Payment heading', 'xhosting-tools')),
+        array('id' => 'footer_payment_image', 'type' => 'media', 'library' => 'image', 'title' => esc_html__('Payment methods image', 'xhosting-tools')),
+        array('id' => 'footer_chat_label', 'type' => 'text', 'title' => esc_html__('Support button text', 'xhosting-tools')),
+        array('id' => 'footer_chat_link', 'type' => 'text', 'title' => esc_html__('Support button link', 'xhosting-tools'), 'desc' => $rm_url_help),
+        array('id' => 'footer_languages', 'type' => 'textarea', 'title' => esc_html__('Language list', 'xhosting-tools'), 'desc' => esc_html__('One language per line. Leave empty to hide the language drop-down.', 'xhosting-tools')),
+
+        array('type' => 'subheading', 'content' => esc_html__('Bottom bar', 'xhosting-tools')),
+        array(
+            'id' => 'footer_copyright',
+            'type' => 'textarea',
+            'title' => esc_html__('Copyright text', 'xhosting-tools'),
+            'desc' => __('<code>[rackmonk_year]</code> shows the current year. Simple HTML such as <code>&lt;strong&gt;</code> is allowed. Also used by the built-in footer when no footer template is selected.', 'xhosting-tools'),
+            'default' => __('© [rackmonk_year] Rackmonk - High Performance Hosting. All rights reserved.', 'xhosting-tools'),
+        ),
+        $rm_link_group('footer_legal_links', esc_html__('Bottom links', 'xhosting-tools'), esc_html__('Terms, refund and privacy policy links.', 'xhosting-tools')),
+    ));
+
     CSF::createSection($prefix . '_theme_options', array(
         'title' => esc_html__('Footer Options', 'xhosting-tools'),
         'icon' => 'fa fa-copyright',
-        'fields' => array(
-
-            array(
-                'id' => 'footer_style',
-                'type' => 'select',
-                'title' => __('Select Footer Style', 'xhosting-tools'),
-                'desc' => sprintf(
-                    __('%sClick%s to create New Footer', 'xhosting-tools'),
-                    '<a href="' . admin_url('edit.php?post_type=xhosting_template') . '" target="_blank">',
-                    '</a>'
-                ),
-                'options' => Xhosting_Plugin_Helper::get_footer_types(),
-            ),
-            array(
-                'id' => 'footer_copyright',
-                'type' => 'textarea',
-                'title' => esc_html__('Fallback Footer Copyright', 'xhosting-tools'),
-                'desc' => esc_html__('Used when no custom footer template is displayed. Leave empty to hide the copyright text.', 'xhosting-tools'),
-                'default' => __('© 2026 Rackmonk - High Performance Hosting. All rights reserved.', 'xhosting-tools'),
-            ),
-            
-
-        ),
+        'fields' => $rm_footer_fields,
     ));
+    unset($rm_url_help, $rm_link_group, $rm_footer_fields, $rm_key, $rm_network);
 
     // Backup section
     CSF::createSection($prefix . '_theme_options', array(
