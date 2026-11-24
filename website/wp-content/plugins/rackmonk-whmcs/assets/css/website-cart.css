@@ -40,9 +40,9 @@ body.rm-hosting-configurator .egx-blog-7-area { padding-top: 0; padding-bottom: 
 
 /* Container Shell */
 .rm-website-cart .rm-cart-shell {
-    max-width: 1240px;
+    max-width: min(var(--rm-content-width, 1240px), calc(100% - 2 * var(--rm-gutter, 24px))); /* site content width and side space: theme style.css */
     margin: 0 auto;
-    padding: 44px 24px 60px;
+    padding: 44px 0 60px;
 }
 
 /* Top Navigation Bar */
@@ -921,7 +921,7 @@ body.rm-hosting-configurator .egx-blog-7-area { padding-top: 0; padding-bottom: 
 
 @media (max-width: 768px) {
     .rm-website-cart .rm-cart-shell {
-        padding: 28px 16px 36px;
+        padding: 28px 0 36px;
     }
     .rm-website-cart .rm-cart-header {
         margin-bottom: 24px;
@@ -965,8 +965,8 @@ body.rm-hosting-configurator .egx-blog-7-area { padding-top: 0; padding-bottom: 
 
 @media (max-width: 420px) {
     .rm-website-cart .rm-cart-shell {
-        padding-right: 12px;
-        padding-left: 12px;
+        padding-right: 0;
+        padding-left: 0;
     }
     .rm-website-cart .rm-cart-basics {
         padding: 16px;

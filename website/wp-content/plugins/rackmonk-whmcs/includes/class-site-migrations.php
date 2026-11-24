@@ -25,6 +25,9 @@ final class Rackmonk_Site_Migrations {
             '2026-11-24-legal-pages' => [__CLASS__, 'legal_pages'],
             '2026-11-24-footer' => [__CLASS__, 'footer'],
             '2026-11-24-hello-dolly' => [__CLASS__, 'hello_dolly'],
+            '2026-11-25-remove-data-centers' => [__CLASS__, 'remove_data_centers'],
+            '2026-11-25-home-migration-box' => [__CLASS__, 'home_migration_box'],
+            '2026-11-25-elementor-cache' => [__CLASS__, 'clear_elementor_cache'],
         ];
     }
 
@@ -195,6 +198,87 @@ final class Rackmonk_Site_Migrations {
         }
         unset($inner);
         return $data;
+    }
+
+    /* ---------------------------------------------------------- data centers */
+
+    /** Removes the "Our Data Center Locations" section (the Data Center widget, and its container once it is empty) from every page. */
+    public static function remove_data_centers() {
+        if (!class_exists('\Elementor\Plugin') || empty(\Elementor\Plugin::$instance->documents)) return null;
+        global $wpdb;
+        $ids = $wpdb->get_col("SELECT DISTINCT p.ID FROM {$wpdb->posts} p JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_elementor_data' WHERE p.post_type = 'page' AND p.post_status <> 'trash' AND m.meta_value LIKE '%xhosting-data-center%'");
+        $changes = [];
+        foreach ($ids as $id) {
+            $document = \Elementor\Plugin::$instance->documents->get((int) $id, false);
+            if (!$document) return null;
+            $data = (array) $document->get_elements_data();
+            $removed = 0;
+            $clean = self::without_widget($data, 'xhosting-data-center', $removed);
+            if ($removed) $changes[(int) $id] = [$document, $data, $clean];
+        }
+        if (!$changes) return 'Data center section: not on any page, nothing to change.';
+        self::backup('data-centers', array_map(static function ($change) { return $change[1]; }, $changes));
+        $titles = [];
+        foreach ($changes as $id => [$document, , $clean]) {
+            $document->save(['elements' => $clean]);
+            $titles[] = get_the_title($id);
+        }
+        return 'Removed the "Our Data Center Locations" section from: ' . implode(', ', $titles) . '.';
+    }
+
+    /** Home page: the "Seamless website migration" box sat inside the dark "Bring your AI ideas" section; it becomes its own section right after it, as on the hosting pages. */
+    public static function home_migration_box() {
+        if (!class_exists('\Elementor\Plugin') || empty(\Elementor\Plugin::$instance->documents)) return null;
+        $id = (int) get_option('page_on_front');
+        if (!$id) return 'Home page migration box: no front page is set, nothing to change.';
+        $document = \Elementor\Plugin::$instance->documents->get($id, false);
+        if (!$document) return null;
+        $data = (array) $document->get_elements_data();
+        $sections = [];
+        $moved = false;
+        foreach ($data as $section) {
+            $box = null;
+            $children = $section['elements'] ?? [];
+            foreach ($children as $i => $child) {
+                $classes = ' ' . (string) ($child['settings']['css_classes'] ?? '') . ' ';
+                if (($child['elType'] ?? '') === 'container' && strpos($classes, ' rm-migration-section ') !== false && count($children) > 1) {
+                    $box = $child;
+                    array_splice($section['elements'], $i, 1);
+                    break;
+                }
+            }
+            $sections[] = $section;
+            if ($box) {
+                $box['isInner'] = false;
+                $sections[] = $box;
+                $moved = true;
+            }
+        }
+        if (!$moved) return 'Home page migration box: already its own section, nothing to change.';
+        self::backup('home-migration-box', ['page' => $id, 'elementor_data' => $data]);
+        $document->save(['elements' => $sections]);
+        return 'Home page: the "Seamless website migration" box is now its own section, as on the hosting pages.';
+    }
+
+    /** Elementor keeps rendered pages for a day; clear that once so the theme's new section markup ("rm-has-bg" in functions.php) shows at once. */
+    public static function clear_elementor_cache() {
+        if (!class_exists('\Elementor\Plugin') || empty(\Elementor\Plugin::$instance->files_manager)) return null;
+        \Elementor\Plugin::$instance->files_manager->clear_cache();
+        return 'Elementor page cache cleared, so the even spacing between page sections shows everywhere.';
+    }
+
+    /** $elements without widgets of $type; a container that only held such widgets is dropped too. */
+    private static function without_widget(array $elements, $type, &$removed) {
+        $kept = [];
+        foreach ($elements as $element) {
+            if (($element['widgetType'] ?? '') === $type) { $removed++; continue; }
+            if (!empty($element['elements'])) {
+                $element['elements'] = self::without_widget($element['elements'], $type, $removed);
+                if (!$element['elements']) continue;
+            }
+            $kept[] = $element;
+        }
+        return $kept;
     }
 
     /* ----------------------------------------------------------------- misc */

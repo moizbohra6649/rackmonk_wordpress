@@ -18,7 +18,7 @@ body.rm-client-access .scroll__top { display: none; }
 .rm-auth {
     display: grid;
     grid-template-columns: minmax(280px, .85fr) minmax(0, 1.15fr);
-    width: min(1180px, calc(100% - 48px));
+    width: min(var(--rm-content-width, 1180px), calc(100% - 2 * var(--rm-gutter, 24px))); /* site content width and side space: theme style.css */
     margin: 48px auto 72px;
     overflow: hidden;
     isolation: isolate;
@@ -238,7 +238,7 @@ body.rm-client-access .scroll__top { display: none; }
     --rm-i-address: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E");
     --rm-i-account: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z'/%3E%3C/svg%3E");
     --rm-i-logout: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 3H4v18h6v-2H6V5h4zM16 7l-1.4 1.4 2.6 2.6H9v2h8.2l-2.6 2.6L16 17l5-5z'/%3E%3C/svg%3E");
-    width: min(1180px, calc(100% - 48px)); margin: 40px auto 72px; color: var(--rm-a-text);
+    width: min(var(--rm-content-width, 1180px), calc(100% - 2 * var(--rm-gutter, 24px))); margin: 40px auto 72px; color: var(--rm-a-text);
 }
 .rm-auth-logged-in .woocommerce { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: 24px; align-items: start; }
 .rm-auth-logged-in .woocommerce::before, .rm-auth-logged-in .woocommerce::after { content: none; }

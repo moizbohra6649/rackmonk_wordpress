@@ -56,7 +56,7 @@ function xhosting_breadcrumb() {
         <!-- breadcrumb-area -->
         <section class="breadcrumb__area breadcrumb__area-two">
             <div class="container">
-                <div class="row justify-content-center">
+                <div class="row"><?php // Lines up with the post column below (single.php). ?>
                     <div class="col-lg-8 col-md-10">
                         <div class="breadcrumb__inner-wrap">
                             <div class="breadcrumb__content">

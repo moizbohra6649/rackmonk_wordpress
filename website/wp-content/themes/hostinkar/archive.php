@@ -12,7 +12,7 @@ $xhostingPostClass = '';
 if (is_active_sidebar('sidebar-1')) {
 	$xhostingPostClass = 'col-xxl-8 col-xl-8 col-lg-8';
 } else {
-	$xhostingPostClass = 'col-lg-10 offset-lg-1';
+	$xhostingPostClass = 'col-12';
 }
 ?>
 <section id="cg-blog-feed" class="blog__post-area section-pb-120">

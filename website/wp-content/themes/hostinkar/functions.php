@@ -196,3 +196,14 @@ add_action('wp_head', function () {
 	echo '<link rel="icon" type="image/png" href="' . $icon . '">';
 	echo '<link rel="apple-touch-icon" href="' . $icon . '">';
 }, 99);
+
+// Elementor sections with a background of their own get the class "rm-has-bg", so style.css can keep
+// their spacing inside the background and space every other section evenly ("Section spacing" in style.css).
+add_action('elementor/frontend/container/before_render', function ($element) {
+	$s = $element->get_settings();
+	$type = $s['background_background'] ?? '';
+	// "Classic" is often switched on with no colour or image at all; that section is still see-through.
+	$visible = in_array($type, ['gradient', 'video', 'slideshow'], true)
+		|| ($type === 'classic' && (!empty($s['background_color']) || !empty($s['__globals__']['background_color']) || !empty($s['background_image']['url'])));
+	if ($visible) $element->add_render_attribute('_wrapper', 'class', 'rm-has-bg');
+});

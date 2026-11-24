@@ -13,10 +13,12 @@ $breadcrumb_bg = !empty($breadcrumb_bg) ? $breadcrumb_bg['url'] : '';
 ?>
 <section class="blog__details-area section-pb-120">
 	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-lg-8 col-md-10">
+		<div class="row">
+			<?php // Same layout as the blog list: the post beside the blog sidebar, full width when the sidebar is empty. ?>
+			<div class="<?php echo is_active_sidebar('sidebar-1') ? 'col-lg-8' : 'col-12'; ?>">
 				<?php xhosting_loops()->render_single_post(); ?>
 			</div>
+			<?php get_sidebar(); ?>
 		</div>
 	</div>
 </section>

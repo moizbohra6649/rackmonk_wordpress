@@ -392,7 +392,7 @@ body.rm-m3 .features__item-thirteen:hover .features__icon-three { background: va
 /* A shared, editable three-step migration process. */
 body.rm-m3 .rm-migration-section {
   width: 100%;
-  max-width: 1350px;
+  max-width: min(var(--rm-content-width, 1350px), calc(100% - 2 * var(--rm-gutter, 24px))); /* both set in theme style.css */
   margin: 32px auto;
   padding: clamp(32px, 5vw, 64px);
   border: 1px solid var(--md-sys-color-outline);
